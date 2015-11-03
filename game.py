@@ -1,14 +1,17 @@
 import sys
 
+from solarsystem.planet.earth import Earth
+
 sys.path.append('..')
 import ctypes
 import pyglet
 from pyglet.gl import *
-from pywavefront import Wavefront
+
+pyglet.resource.path = ['resource/mesh']
 
 rotation = 0
 
-meshes = Wavefront('earth.obj')
+earth = Earth()
 
 window = pyglet.window.Window(800, 600, caption='Demo', resizable=True)
 
@@ -49,7 +52,7 @@ def on_draw():
     glRotatef(rotation, 1, 0, 0)
     glRotatef(90, 0, 0, 1)
     glRotatef(0, 0, 1, 0)
-    meshes.draw()
+    earth.render()
 
 
 def update(dt):
