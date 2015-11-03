@@ -1,5 +1,5 @@
 from solarsystem.body import Planet
-from solarsystem.util import Orbit
+from solarsystem.orbit import Orbit
 
 
 class Earth(Planet):
