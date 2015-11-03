@@ -1,28 +1,22 @@
 import sys
-
 from solarsystem.planet.earth import Earth
-
-sys.path.append('..')
 import ctypes
 import pyglet
 from pyglet.gl import *
 
 pyglet.resource.path = ['resource/mesh']
-
-rotation = 0
-
-earth = Earth()
-
 window = pyglet.window.Window(800, 600, caption='Demo', resizable=True)
 
+rotation = 0
+earth = Earth()
 lightfv = ctypes.c_float * 4
-label = pyglet.text.Label('Hello, world', font_name='Times New Roman', font_size=12, x=800, y=700, anchor_x='center',
-                          anchor_y='center')
+time = 0
 
 
 @window.event
 def on_resize(width, height):
     glMatrixMode(GL_PROJECTION)
+    glViewport(0, 0, width, height)
     glLoadIdentity()
     gluPerspective(40.0, float(width) / height, 1, 100.0)
     glEnable(GL_DEPTH_TEST)
@@ -43,25 +37,17 @@ def on_draw():
     glEnable(GL_DEPTH_TEST)
     glShadeModel(GL_SMOOTH)
     glMatrixMode(GL_MODELVIEW)
-    # glTranslated(0, 4, -8)
-    #    glRotatef(90, 0, 1, 0)
-    #    glRotatef(-60, 0, 0, 1)
-    # Rotations for sphere on axis - useful
+
     glTranslated(0, .8, -20)
-    glRotatef(-66.5, 0, 0, 1)
-    glRotatef(rotation, 1, 0, 0)
-    glRotatef(90, 0, 0, 1)
-    glRotatef(0, 0, 1, 0)
     earth.render()
 
 
 def update(dt):
-    global rotation
-    rotation += 45 * dt
-    if rotation > 720:
-        rotation = 0
+    global time
+    time += dt * 60 * 60
+
+    earth.update(time)
 
 
 pyglet.clock.schedule(update)
-
 pyglet.app.run()
