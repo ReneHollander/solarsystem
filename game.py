@@ -1,11 +1,13 @@
-import sys
 from solarsystem.planet.earth import Earth
 import ctypes
 import pyglet
 from pyglet.gl import *
 
 pyglet.resource.path = ['resource/mesh']
-window = pyglet.window.Window(800, 600, caption='Demo', resizable=True)
+
+config = pyglet.gl.Config(sample_buffers=1, samples=8)
+window = pyglet.window.Window(800, 600, config=config, caption='Demo', resizable=True, vsync=False)
+fps_display = pyglet.window.FPSDisplay(window)
 
 rotation = 0
 earth = Earth()
@@ -40,12 +42,12 @@ def on_draw():
 
     glTranslated(0, .8, -20)
     earth.render()
+    fps_display.draw()
 
 
 def update(dt):
     global time
     time += dt * 60 * 60
-
     earth.update(time)
 
 
