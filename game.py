@@ -6,7 +6,6 @@ import math
 import pyglet
 from pyglet.gl import *
 from pyglet.window import key
-
 from util.camera import Camera
 
 pyglet.resource.path = ['resource/mesh']
@@ -25,6 +24,7 @@ print(orientation)
 
 keys = key.KeyStateHandler()
 window.push_handlers(keys)
+
 camera = Camera(keys)
 
 
@@ -40,6 +40,12 @@ proj_matrix = None
 def on_resize(width, height):
     global proj_matrix
     proj_matrix = Matrix44.perspective_projection(math.radians(45), width / height, 0.1, 100.0)
+    glMatrixMode(GL_PROJECTION)
+    glViewport(0, 0, width, height)
+    glLoadIdentity()
+    gluPerspective(40.0, float(width) / height, 1, 100.0)
+    glEnable(GL_DEPTH_TEST)
+    glMatrixMode(GL_MODELVIEW)
     return True
 
 
@@ -47,11 +53,8 @@ def on_resize(width, height):
 def on_draw():
     window.clear()
 
-    print(proj_matrix)
-    print(camera.view_matrix)
-    print(model_matrix)
-
     mvp = proj_matrix * camera.view_matrix * model_matrix
+    print(mvp)
 
     matrix = [
         mvp.m11, mvp.m12, mvp.m13, mvp.m14,
@@ -67,14 +70,11 @@ def on_draw():
     glLightfv(GL_LIGHT0, GL_POSITION, lightfv(-40, 200, 100, 0.0))
     glLightfv(GL_LIGHT0, GL_AMBIENT, lightfv(0.2, 0.2, 0.2, 1.0))
     glLightfv(GL_LIGHT0, GL_DIFFUSE, lightfv(0.5, 0.5, 0.5, 1.0))
-
     glEnable(GL_LIGHT0)
     glEnable(GL_LIGHTING)
     glEnable(GL_COLOR_MATERIAL)
     glEnable(GL_DEPTH_TEST)
-
     glShadeModel(GL_SMOOTH)
-    glMatrixMode(GL_MODELVIEW)
 
     glTranslated(0, .8, -20)
     earth.render()

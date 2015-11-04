@@ -3,6 +3,8 @@ import numpy as np
 from pyglet.window import key
 from pyrr.objects import matrix44
 
+from util.mathhelper import mulQuaternionVector3
+
 
 class Camera():
     def __init__(self, keys):
@@ -47,7 +49,7 @@ class Camera():
             posDelta.y -= speed
 
         inverse = self.orientation.inverse
-        self.position += inverse * posDelta
+        self.position += mulQuaternionVector3(inverse, posDelta)
 
         matrix = self.orientation.matrix44 * Matrix44.from_translation(self.position)
         self.view_matrix = matrix
