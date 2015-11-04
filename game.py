@@ -39,13 +39,14 @@ proj_matrix = None
 @window.event
 def on_resize(width, height):
     global proj_matrix
-    proj_matrix = Matrix44.perspective_projection(math.radians(45), width / height, 0.1, 100.0)
-    glMatrixMode(GL_PROJECTION)
+    proj_matrix = Matrix44.perspective_projection(45, float(width) / float(height), 0.1, 100.0)
+    print(proj_matrix)
     glViewport(0, 0, width, height)
-    glLoadIdentity()
-    gluPerspective(40.0, float(width) / height, 1, 100.0)
-    glEnable(GL_DEPTH_TEST)
     glMatrixMode(GL_MODELVIEW)
+    # glLoadIdentity()
+    # gluPerspective(40.0, float(width) / height, 1, 100.0)
+    # glEnable(GL_DEPTH_TEST)
+    # glMatrixMode(GL_MODELVIEW)
     return True
 
 
@@ -54,18 +55,6 @@ def on_draw():
     window.clear()
 
     mvp = proj_matrix * camera.view_matrix * model_matrix
-    print(mvp)
-
-    matrix = [
-        mvp.m11, mvp.m12, mvp.m13, mvp.m14,
-        mvp.m21, mvp.m22, mvp.m23, mvp.m24,
-        mvp.m31, mvp.m32, mvp.m33, mvp.m34,
-        mvp.m41, mvp.m42, mvp.m43, mvp.m44,
-    ]
-
-    matrix_gl = (GLdouble * len(matrix))(*matrix)
-
-    glLoadMatrixd(matrix_gl)
 
     glLightfv(GL_LIGHT0, GL_POSITION, lightfv(-40, 200, 100, 0.0))
     glLightfv(GL_LIGHT0, GL_AMBIENT, lightfv(0.2, 0.2, 0.2, 1.0))
@@ -77,7 +66,7 @@ def on_draw():
     glShadeModel(GL_SMOOTH)
 
     glTranslated(0, .8, -20)
-    earth.render()
+    earth.render(mvp)
     fps_display.draw()
 
 

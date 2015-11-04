@@ -1,4 +1,6 @@
 from abc import ABCMeta, abstractmethod
+
+from pyrr import Matrix44
 from pywavefront import Wavefront
 from pyglet.gl import *
 
@@ -16,8 +18,9 @@ class Planet(object, metaclass=ABCMeta):
     def update(self, time):
         self.timefactor = (time % self.sidereal_rotation_period) / self.sidereal_rotation_period
 
-    def render(self):
-        glPushMatrix()
+    def render(self, mvp):
+        mat = Matrix44(mvp)
+        mat
         glRotatef(-90 - self.axial_tilt, 0, 0, 1)
         glRotatef(-360 * self.timefactor, 1, 0, 0)
         glRotatef(90, 0, 0, 1)
