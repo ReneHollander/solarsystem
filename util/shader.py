@@ -4,10 +4,10 @@
 # Distributed under the Boost Software License, Version 1.0
 # (see http://www.boost.org/LICENSE_1_0.txt)
 #
+import ctypes
+from ctypes import c_char_p, cast, pointer, POINTER, c_char, c_int, byref, create_string_buffer, c_float
 
-import ctypes as cffi
-
-import pyglet.gl
+from pyglet.gl import *
 
 
 class Shader:
@@ -15,18 +15,17 @@ class Shader:
     # the arrays will be concattenated into one string by OpenGL
     def __init__(self, vert=[], frag=[], geom=[]):
         # create the program handle
-        self.handle = pyglet.gl.glCreateProgram()
+        self.handle = glCreateProgram()
         # we are not linked yet
         self.linked = False
 
         # create the vertex shader
-        self.createShader(vert, pyglet.gl.GL_VERTEX_SHADER)
+        self.createShader(vert, GL_VERTEX_SHADER)
         # create the fragment shader
-        self.createShader(frag, pyglet.gl.GL_FRAGMENT_SHADER)
+        self.createShader(frag, GL_FRAGMENT_SHADER)
         # the geometry shader will be the same, once pyglet supports the extension
         # self.createShader(frag, GL_GEOMETRY_SHADER_EXT)
-        self.attributes = {}
-        self.uniforms = {}
+
         # attempt to link the program
         self.link()
 
@@ -37,125 +36,64 @@ class Shader:
             return
 
         # create the shader handle
-        shader = pyglet.gl.glCreateShader(type)
+        shader = glCreateShader(type)
 
         # convert the source strings into a ctypes pointer-to-char array, and upload them
         # this is deep, dark, dangerous black magick - don't try stuff like this at home!
-        src = (cffi.c_char_p * count)(*strings)
-        pyglet.gl.glShaderSource(shader, count, cffi.cast(cffi.pointer(src), cffi.POINTER(cffi.POINTER(cffi.c_char))),
-                                 None)
+        src = (c_char_p * count)(*strings)
+        glShaderSource(shader, count, cast(pointer(src), POINTER(POINTER(c_char))), None)
 
         # compile the shader
-        pyglet.gl.glCompileShader(shader)
+        glCompileShader(shader)
 
-        temp = cffi.c_int(0)
+        temp = c_int(0)
         # retrieve the compile status
-        pyglet.gl.glGetShaderiv(shader, pyglet.gl.GL_COMPILE_STATUS, cffi.byref(temp))
+        glGetShaderiv(shader, GL_COMPILE_STATUS, byref(temp))
 
         # if compilation failed, print the log
         if not temp:
             # retrieve the log length
-            pyglet.gl.glGetShaderiv(shader, pyglet.gl.GL_INFO_LOG_LENGTH, cffi.byref(temp))
+            glGetShaderiv(shader, GL_INFO_LOG_LENGTH, byref(temp))
             # create a buffer for the log
-            buffer = cffi.create_string_buffer(temp.value)
+            buffer = create_string_buffer(temp.value)
             # retrieve the log text
-            pyglet.gl.glGetShaderInfoLog(shader, temp, None, buffer)
+            glGetShaderInfoLog(shader, temp, None, buffer)
             # print the log to the console
-            print
-            buffer.value
+            print(buffer.value)
         else:
             # all is well, so attach the shader to the program
-            pyglet.gl.glAttachShader(self.handle, shader);
+            glAttachShader(self.handle, shader)
 
     def link(self):
-        pyglet.gl.glBindFragDataLocation(self.handle, 0, "fcolor")
         # link the program
-        pyglet.gl.glLinkProgram(self.handle)
-        temp = cffi.c_int(0)
+        glLinkProgram(self.handle)
+
+        temp = c_int(0)
         # retrieve the link status
-        pyglet.gl.glGetProgramiv(self.handle, pyglet.gl.GL_LINK_STATUS, cffi.byref(temp))
+        glGetProgramiv(self.handle, GL_LINK_STATUS, byref(temp))
+
         # if linking failed, print the log
         if not temp:
-            #   retrieve the log length
-            pyglet.gl.glGetProgramiv(self.handle, pyglet.gl.GL_INFO_LOG_LENGTH, cffi.byref(temp))
+            #	retrieve the log length
+            glGetProgramiv(self.handle, GL_INFO_LOG_LENGTH, byref(temp))
             # create a buffer for the log
-            buffer = cffi.create_string_buffer(temp.value)
+            buffer = create_string_buffer(temp.value)
             # retrieve the log text
-            pyglet.gl.glGetProgramInfoLog(self.handle, temp, None, buffer)
+            glGetProgramInfoLog(self.handle, temp, None, buffer)
             # print the log to the console
-            print
-            buffer.value
+            print(buffer.value)
         else:
             # all is well, so we are linked
             self.linked = True
-            self.bind()
-            self.enumerate_attributes()
-            self.enumerate_uniforms()
-
-    def enumerate_attributes(self):
-        param = cffi.c_int(0)
-        pyglet.gl.glGetProgramiv(self.handle, pyglet.gl.GL_ACTIVE_ATTRIBUTES, cffi.byref(param))
-        self.attributeCount = param.value
-        print
-        "%d attributes " % self.attributeCount
-        pyglet.gl.glGetProgramiv(self.handle, pyglet.gl.GL_ACTIVE_ATTRIBUTE_MAX_LENGTH,
-                                 cffi.byref(param))
-        cnamelen = param.value
-        cname = cffi.create_string_buffer(cnamelen + 1)
-        for i in range(0, self.attributeCount):
-            out_len = cffi.c_int(0)
-            attrib_size = cffi.c_int(0)
-            attrib_type = cffi.c_uint(0)
-            pyglet.gl.glGetActiveAttrib(self.handle, i, cnamelen, cffi.byref(out_len),
-                                        cffi.byref(attrib_size), cffi.byref(attrib_type), cname)
-            print
-            "Attrib size %d, type %04x, name %s " % \
-            (attrib_size.value, attrib_type.value, cname.value)
-            location = pyglet.gl.glGetAttribLocation(self.handle, cname)
-            self.attributes[cname.value] = \
-                {"location": location, "info": (attrib_type.value, attrib_size.value)}
-        return
-
-    def enumerate_uniforms(self):
-        param = cffi.c_int(0)
-        pyglet.gl.glGetProgramiv(self.handle,
-                                 pyglet.gl.GL_ACTIVE_UNIFORMS, cffi.byref(param))
-        self.uniformCount = param.value
-        print
-        "%d uniforms " % self.uniformCount
-        pyglet.gl.glGetProgramiv(self.handle, pyglet.gl.GL_ACTIVE_UNIFORM_MAX_LENGTH,
-                                 cffi.byref(param))
-        cnamelen = param.value
-        cname = cffi.create_string_buffer(cnamelen + 1)
-        for i in range(0, self.uniformCount):
-            out_len = cffi.c_int()
-            uniform_size = cffi.c_int()
-            uniform_type = cffi.c_uint()
-            pyglet.gl.glGetActiveUniform(self.handle, i,
-                                         cnamelen, cffi.byref(out_len),
-                                         cffi.byref(uniform_size),
-                                         cffi.byref(uniform_type), cname)
-            location = pyglet.gl.glGetUniformLocation(self.handle, cname)
-            print
-            "Uniform  location %d size %d, type %04x, name %s " % \
-            (location, uniform_size.value, uniform_type.value,
-             cname.value)
-            self.uniforms[cname.value] = {"location": location,
-                                          "info": (uniform_type.value,
-                                                   uniform_size.value)}
-        return
-
-    def has_uniform(self, name):
-        return name in self.uniforms
 
     def bind(self):
         # bind the program
-        pyglet.gl.glUseProgram(self.handle)
+        glUseProgram(self.handle)
 
     def unbind(self):
-        # unbind whatever program is currently bound - not necessarily this
-        # program, so this should probably be a class method instead
-        pyglet.gl.glUseProgram(0)
+        # unbind whatever program is currently bound - not necessarily this program,
+        # so this should probably be a class method instead
+        glUseProgram(0)
 
     # upload a floating point uniform
     # this program must be currently bound
@@ -163,12 +101,12 @@ class Shader:
         # check there are 1-4 values
         if len(vals) in range(1, 5):
             # select the correct function
-            {1: pyglet.gl.glUniform1f,
-             2: pyglet.gl.glUniform2f,
-             3: pyglet.gl.glUniform3f,
-             4: pyglet.gl.glUniform4f
+            {1: glUniform1f,
+             2: glUniform2f,
+             3: glUniform3f,
+             4: glUniform4f
              # retrieve the uniform location, and set
-             }[len(vals)](self.uniforms[name]["location"], *vals)
+             }[len(vals)](glGetUniformLocation(self.handle, name), *vals)
 
     # upload an integer uniform
     # this program must be currently bound
@@ -176,23 +114,18 @@ class Shader:
         # check there are 1-4 values
         if len(vals) in range(1, 5):
             # select the correct function
-            {1: pyglet.gl.glUniform1i,
-             2: pyglet.gl.glUniform2i,
-             3: pyglet.gl.glUniform3i,
-             4: pyglet.gl.glUniform4i}[len(vals)](self.uniforms[name]["location"], *
-            vals)
+            {1: glUniform1i,
+             2: glUniform2i,
+             3: glUniform3i,
+             4: glUniform4i
+             # retrieve the uniform location, and set
+             }[len(vals)](glGetUniformLocation(self.handle, name), *vals)
 
     # upload a uniform matrix
     # works with matrices stored as lists,
     # as well as euclid matrices
-    def uniform_matrixd(self, name, mat):
+    def uniform_matrixf(self, name, mat):
         # obtian the uniform location
-        loc = self.uniforms[name]["location"]
+        loc = glGetUniformLocation(self.handle, ctypes.create_string_buffer(name))
         # uplaod the 4x4 floating point matrix
-        pyglet.gl.glUniformMatrix4dv(loc, 1, False, (cffi.c_double * 16)(*mat))
-
-    def attribute(self, name):
-        return self.attributes[name]["location"]
-
-    def has_attribute(self, name):
-        return name in self.attributes
+        glUniformMatrix4fv(loc, 1, False, (c_float * 16)(*mat))
