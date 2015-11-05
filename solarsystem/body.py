@@ -32,7 +32,7 @@ class Planet(object, metaclass=ABCMeta):
         matrix.rotate_axis(math.radians(0), Vector3(0, 1, 0))
         # glLoadMatrixd(toGlMatrix(matrix))
         self.shader.bind()
-        self.shader.uniform_matrix("transformation", matrix)
+        self.shader.uniform_matrix("mvp", matrix)
         self.obj.draw()
         self.shader.unbind()
 
