@@ -1,11 +1,11 @@
-from solarsystem.planet.earth import Earth
-from pyrr import Quaternion, Matrix44, Vector3
-import numpy as np
 import ctypes
-import math
+
 import pyglet
+from euclid import *
 from pyglet.gl import *
 from pyglet.window import key
+
+from solarsystem.planet.earth import Earth
 from util.camera import Camera
 
 pyglet.resource.path = ['resource/mesh']
@@ -32,21 +32,17 @@ def on_mouse_motion(x, y, dx, dy):
     camera.add_mouse_delta(dx, dy)
 
 
-model_matrix = Matrix44.identity()
+model_matrix = Matrix4()
 proj_matrix = None
 
 
 @window.event
 def on_resize(width, height):
     global proj_matrix
-    proj_matrix = Matrix44.perspective_projection(45, float(width) / float(height), 0.1, 100.0)
+    proj_matrix = Matrix4.new_perspective(45, float(width) / float(height), 0.1, 100.0)
     print(proj_matrix)
     glViewport(0, 0, width, height)
     glMatrixMode(GL_MODELVIEW)
-    # glLoadIdentity()
-    # gluPerspective(40.0, float(width) / height, 1, 100.0)
-    # glEnable(GL_DEPTH_TEST)
-    # glMatrixMode(GL_MODELVIEW)
     return True
 
 
@@ -65,7 +61,6 @@ def on_draw():
     glEnable(GL_DEPTH_TEST)
     glShadeModel(GL_SMOOTH)
 
-    glTranslated(0, .8, -20)
     earth.render(mvp)
     fps_display.draw()
 

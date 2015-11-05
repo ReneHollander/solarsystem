@@ -21,14 +21,11 @@ class Orbit:
         self.inclination_to_invariable_plane = inclination_to_invariable_plane
 
     def __str__(self):
-        return "Orbit({" \
-               "aphelion: \"" + str(self.aphelion) + "\", "\
-               "perihelion: \"" + str(self.perihelion) + "\", "\
-               "semi_major_axis: \"" + str(self.semi_major_axis) + "\", "\
-               "eccentricity: \"" + str(self.eccentricity) + "\", "\
-               "orbital_period: \"" + str(self.orbital_period) + "\", "\
-               "average_orbital_speed: \"" + str(self.average_orbital_speed) + "\", "\
-               "mean_anomaly: \"" + str(self.mean_anomaly) + "\", "\
-               "inclination_to_sun: \"" + str(self.inclination_to_sun) + "\", "\
-               "inclination_to_invariable_plane: \"" + str(self.inclination_to_invariable_plane) + "\""\
-               "})"
+        return "Orbit({aphelion: \"" + str(self.aphelion) + "\", perihelion: \"" + str(
+            self.perihelion) + "\", semi_major_axis: \"" + str(self.semi_major_axis) + "\", eccentricity: \"" + str(
+            self.eccentricity) + "\", orbital_period: \"" + str(
+            self.orbital_period) + "\", average_orbital_speed: \"" + str(
+            self.average_orbital_speed) + "\", mean_anomaly: \"" + str(
+            self.mean_anomaly) + "\", inclination_to_sun: \"" + str(
+            self.inclination_to_sun) + "\", inclination_to_invariable_plane: \"" + str(
+            self.inclination_to_invariable_plane) + "\"})"

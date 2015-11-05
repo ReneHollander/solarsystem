@@ -1,8 +1,11 @@
-from abc import ABCMeta, abstractmethod
+import math
+from abc import ABCMeta
 
-from pyrr import Matrix44
-from pywavefront import Wavefront
+from euclid import Vector3
 from pyglet.gl import *
+from pywavefront import Wavefront
+
+from util.mathhelper import toGlMatrix
 
 
 class Planet(object, metaclass=ABCMeta):
@@ -19,14 +22,14 @@ class Planet(object, metaclass=ABCMeta):
         self.timefactor = (time % self.sidereal_rotation_period) / self.sidereal_rotation_period
 
     def render(self, mvp):
-        mat = Matrix44(mvp)
-        mat
-        glRotatef(-90 - self.axial_tilt, 0, 0, 1)
-        glRotatef(-360 * self.timefactor, 1, 0, 0)
-        glRotatef(90, 0, 0, 1)
-        glRotatef(0, 0, 1, 0)
+        matrix = mvp.__copy__()
+        matrix.translate(0, .8, -20)
+        matrix.rotate_axis(math.radians(-90 - self.axial_tilt), Vector3(0, 0, 1))
+        matrix.rotate_axis(math.radians(-360 * self.timefactor), Vector3(1, 0, 0))
+        matrix.rotate_axis(math.radians(90), Vector3(0, 0, 1))
+        matrix.rotate_axis(math.radians(0), Vector3(0, 1, 0))
+        glLoadMatrixd(toGlMatrix(matrix))
         self.obj.draw()
-        glPopMatrix()
 
     def __str__(self):
         return self.name + "({orbit: " + str(self.orbit) + ", mean_radius: \"" + str(

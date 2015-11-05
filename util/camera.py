@@ -1,9 +1,5 @@
-from pyrr import Quaternion, Matrix44, Vector3
-import numpy as np
+from euclid import *
 from pyglet.window import key
-from pyrr.objects import matrix44
-
-from util.mathhelper import mulQuaternionVector3
 
 
 class Camera():
@@ -13,7 +9,7 @@ class Camera():
         self.dx = 0
         self.dy = 0
 
-        self.view_matrix = Matrix44.identity()
+        self.view_matrix = Matrix4()
         self.orientation = Quaternion()
         self.position = Vector3()
 
@@ -27,12 +23,12 @@ class Camera():
         dy = self.get_dy()
 
         if dy != 0:
-            self.orientation = Quaternion.from_axis_rotation((-dy * rotSpeed, 1, 0), 0) * self.orientation
+            self.orientation = Quaternion.new_rotate_axis(0, Vector3(-dy * rotSpeed, 1, 0)) * self.orientation
 
         if dx != 0:
-            self.orientation = Quaternion.from_axis_rotation((dx * rotSpeed, 0, 1), 0) * self.orientation
+            self.orientation = Quaternion.new_rotate_axis(0, Vector3(dx * rotSpeed, 0, 1)) * self.orientation
 
-        self.orientation.normalise()
+        self.orientation.normalize()
 
         posDelta = Vector3()
         if self.keys[key.W]:
@@ -48,10 +44,10 @@ class Camera():
         if self.keys[key.LCTRL]:
             posDelta.y -= speed
 
-        inverse = self.orientation.inverse
-        self.position += mulQuaternionVector3(inverse, posDelta)
+        inverse = self.orientation.get_matrix().inverse().get_quaternion()
+        self.position += inverse * posDelta
 
-        matrix = self.orientation.matrix44 * Matrix44.from_translation(self.position)
+        matrix = self.orientation.get_matrix().translate(self.position.x, self.position.y, self.position.z)
         self.view_matrix = matrix
 
     def get_dx(self):
