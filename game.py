@@ -3,12 +3,13 @@ import ctypes
 import pyglet
 from euclid import *
 from pyglet.gl import *
-from pyglet.window import key
 
 from solarsystem.planet.earth import Earth
+from util import read_resource_to_string
 from util.camera import Camera
+from util.shader import Shader
 
-pyglet.resource.path = ['resource/mesh']
+pyglet.resource.path = ['resource/mesh', 'resource/shader']
 
 config = pyglet.gl.Config(sample_buffers=1, samples=8)
 window = pyglet.window.Window(800, 600, config=config, caption='Solarsystem', resizable=True, vsync=False)
@@ -22,6 +23,9 @@ camera = Camera(window)
 model_matrix = Matrix4()
 proj_matrix = None
 mvp = Matrix4()
+
+shader = Shader(read_resource_to_string('base.vert'), read_resource_to_string('base.frag'))
+print(shader)
 
 
 @window.event
