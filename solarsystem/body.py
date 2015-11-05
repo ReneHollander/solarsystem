@@ -19,7 +19,6 @@ class Planet(object, metaclass=ABCMeta):
         self.obj = Wavefront(self.name.lower() + ".obj")
         self.shader = Shader(read_resource_to_string('base.vert'), read_resource_to_string('base.frag'))
         self.shader.link()
-        self.shader.enumerate_uniforms()
 
     def update(self, time):
         self.timefactor = (time % self.sidereal_rotation_period) / self.sidereal_rotation_period
@@ -33,7 +32,7 @@ class Planet(object, metaclass=ABCMeta):
         matrix.rotate_axis(math.radians(0), Vector3(0, 1, 0))
         # glLoadMatrixd(toGlMatrix(matrix))
         self.shader.bind()
-        self.shader.uniform_matrixd("transformation", matrix)
+        self.shader.uniform_matrix("transformation", matrix)
         self.obj.draw()
         self.shader.unbind()
 

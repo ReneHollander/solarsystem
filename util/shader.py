@@ -124,8 +124,15 @@ class Shader:
     # upload a uniform matrix
     # works with matrices stored as lists,
     # as well as euclid matrices
-    def uniform_matrixf(self, name, mat):
+    def uniform_matrix(self, name, mat):
         # obtian the uniform location
-        loc = glGetUniformLocation(self.handle, ctypes.create_string_buffer(name))
+        loc = glGetUniformLocation(self.handle, ctypes.create_string_buffer(name.encode('utf-8')))
         # uplaod the 4x4 floating point matrix
-        glUniformMatrix4fv(loc, 1, False, (c_float * 16)(*mat))
+        print(loc)
+        matrix = [
+            float(mat.a), float(mat.b), float(mat.c), float(mat.d),
+            float(mat.e), float(mat.f), float(mat.g), float(mat.h),
+            float(mat.i), float(mat.j), float(mat.k), float(mat.l),
+            float(mat.m), float(mat.n), float(mat.o), float(mat.p)
+        ]
+        glUniformMatrix4fv(loc, 1, False, (ctypes.c_float * 16)(*matrix))
