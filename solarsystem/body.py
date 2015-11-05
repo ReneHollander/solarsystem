@@ -7,7 +7,7 @@ from pywavefront import Wavefront
 from util import read_resource_to_string
 from util.shader import Shader
 
-
+# A Planet
 class Planet(object, metaclass=ABCMeta):
     def __init__(self, orbit, mean_radius, axial_tilt, sidereal_rotation_period):
         self.name = self.__class__.__name__
@@ -21,9 +21,11 @@ class Planet(object, metaclass=ABCMeta):
         self.shader.link()
         self.shader.enumerate_uniforms()
 
+    # Update
     def update(self, time):
         self.timefactor = (time % self.sidereal_rotation_period) / self.sidereal_rotation_period
 
+    # Render
     def render(self, mvp):
         matrix = mvp.__copy__()
         matrix.translate(0, .8, -20)
