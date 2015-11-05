@@ -23,7 +23,9 @@ model_matrix = Matrix4()
 proj_matrix = None
 mvp = Matrix4()
 
+# 5BHIT ist beste Klasse!
 
+# Window resize event
 @window.event
 def on_resize(width, height):
     global proj_matrix
@@ -33,6 +35,7 @@ def on_resize(width, height):
     return True
 
 
+# Called if window requests to render
 @window.event
 def on_draw():
     window.clear()
@@ -48,7 +51,7 @@ def on_draw():
     earth.render(mvp)
     fps_display.draw()
 
-
+# Updte time and recalculate mvp
 def update(dt):
     global time
     time += dt * 60 * 60
