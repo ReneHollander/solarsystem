@@ -40,9 +40,9 @@ class Camera():
         if self.keys[key.D]:
             posDelta.x -= speed
         if self.keys[key.SPACE]:
-            posDelta.y += speed
-        if self.keys[key.LCTRL]:
             posDelta.y -= speed
+        if self.keys[key.LCTRL]:
+            posDelta.y += speed
 
         inverse = self.orientation.get_matrix().inverse().get_quaternion()
         self.position += inverse * posDelta
