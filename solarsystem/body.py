@@ -2,10 +2,10 @@ import math
 from abc import ABCMeta
 
 from euclid import Vector3
-from pyglet.gl import *
 from pywavefront import Wavefront
 
-from util.mathhelper import toGlMatrix
+from util import read_resource_to_string
+from util.shader import Shader
 
 
 class Planet(object, metaclass=ABCMeta):
@@ -17,6 +17,9 @@ class Planet(object, metaclass=ABCMeta):
         self.sidereal_rotation_period = sidereal_rotation_period
 
         self.obj = Wavefront(self.name.lower() + ".obj")
+        self.shader = Shader(read_resource_to_string('base.vert'), read_resource_to_string('base.frag'))
+        self.shader.link()
+        self.shader.enumerate_uniforms()
 
     def update(self, time):
         self.timefactor = (time % self.sidereal_rotation_period) / self.sidereal_rotation_period
@@ -28,8 +31,11 @@ class Planet(object, metaclass=ABCMeta):
         matrix.rotate_axis(math.radians(-360 * self.timefactor), Vector3(1, 0, 0))
         matrix.rotate_axis(math.radians(90), Vector3(0, 0, 1))
         matrix.rotate_axis(math.radians(0), Vector3(0, 1, 0))
-        glLoadMatrixd(toGlMatrix(matrix))
+        # glLoadMatrixd(toGlMatrix(matrix))
+        self.shader.bind()
+        self.shader.uniform_matrixd("transformation", matrix)
         self.obj.draw()
+        self.shader.unbind()
 
     def __str__(self):
         return self.name + "({orbit: " + str(self.orbit) + ", mean_radius: \"" + str(

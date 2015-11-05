@@ -5,9 +5,7 @@ from euclid import *
 from pyglet.gl import *
 
 from solarsystem.planet.earth import Earth
-from util import read_resource_to_string
 from util.camera import Camera
-from util.shader import Shader
 
 pyglet.resource.path = ['resource/mesh', 'resource/shader']
 
@@ -23,9 +21,6 @@ camera = Camera(window)
 model_matrix = Matrix4()
 proj_matrix = None
 mvp = Matrix4()
-
-shader = Shader(read_resource_to_string('base.vert'), read_resource_to_string('base.frag'))
-print(shader)
 
 
 @window.event
