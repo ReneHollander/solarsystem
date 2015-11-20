@@ -6,15 +6,17 @@ from pyglet.gl import *
 from pyglet.window import key
 
 from solarsystem.planet.earth import Earth
+from solarsystem.planet.moon import Moon
 from util.camera import Camera
 
-pyglet.resource.path = ['resource/mesh']
+pyglet.resource.path = ['resource/texture']
 
 config = pyglet.gl.Config(sample_buffers=1, samples=8)
 window = pyglet.window.Window(800, 600, config=config, caption='Solarsystem', resizable=True, vsync=False)
 fps_display = pyglet.window.FPSDisplay(window)
 rotation = 0
 earth = Earth()
+moon = Moon()
 lightfv = ctypes.c_float * 4
 time = 0
 orientation = Quaternion()
@@ -45,7 +47,9 @@ def on_draw():
     glEnable(GL_DEPTH_TEST)
     glShadeModel(GL_SMOOTH)
 
-    earth.render(mvp)
+    earth.render(mvp.__copy__())
+    mvp.translate(40, 0, 0)
+    moon.render(mvp.__copy__())
     fps_display.draw()
 
 
@@ -56,6 +60,7 @@ def update(dt):
     global mvp
     mvp = proj_matrix * camera.view_matrix * model_matrix
     earth.update(time)
+    moon.update(time)
 
 
 pyglet.clock.schedule(update)
