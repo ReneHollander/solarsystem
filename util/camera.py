@@ -17,7 +17,7 @@ class Camera():
         self.position = Vector3()
 
     def update(self, delta):
-        speed = 50
+        speed = 300
         speed *= delta / 1e1
 
         rotSpeed = 0.5 * speed

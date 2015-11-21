@@ -1,4 +1,7 @@
+from math import sin, cos, radians
+
 from abc import ABCMeta, abstractmethod
+from euclid import Vector3
 
 
 class Orbit(object, metaclass=ABCMeta):
@@ -11,11 +14,15 @@ class Orbit(object, metaclass=ABCMeta):
 
 
 class CircualOrbit(Orbit):
-    def __init__(self, radius):
+    def __init__(self, radius, orbital_period):
         self.radius = radius
+        self.orbital_period = orbital_period
 
     def calculate(self, time):
-        pass
+        rot = radians(360 * ((time % self.orbital_period) / self.orbital_period))
+        x = self.radius * cos(rot)
+        y = self.radius * sin(rot)
+        return Vector3(x=x, y=y)
 
     def __str__(self):
         return "CircualOrbit(radius=" + self.radius + ")"
