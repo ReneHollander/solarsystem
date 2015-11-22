@@ -4,7 +4,7 @@ from euclid import *
 from pyglet.gl import *
 from solarsystem.body import OrbitingBody, StationaryBody
 from solarsystem.orbit import CircualOrbit
-from util.camera import Camera
+from util.camera import Camera, halfpi
 
 pyglet.resource.path = ['resource/texture']
 
@@ -12,7 +12,7 @@ config = pyglet.gl.Config(sample_buffers=1, samples=8)
 window = pyglet.window.Window(800, 600, config=config, caption='Solarsystem', resizable=True, vsync=False)
 fps_display = pyglet.window.FPSDisplay(window)
 
-camera = Camera(window)
+camera = Camera(window, position=Vector3(0, -400, 0), pitch=halfpi)
 model_matrix = Matrix4()
 proj_matrix = None
 mvp = Matrix4()

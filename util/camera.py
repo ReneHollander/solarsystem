@@ -1,19 +1,20 @@
-from math import sin, cos
-from math import radians
+from math import sin, cos, pi
 from euclid import *
 from pyglet.window import key, mouse, pyglet
 
+halfpi = pi / 2.0
+
 
 class Camera():
-    def __init__(self, window):
+    def __init__(self, window, position=Vector3(), yaw=0.0, pitch=0.0):
         self.window = window
         self.keys = key.KeyStateHandler()
         self.mouse_locked = False
         self.dx = 0
         self.dy = 0
-        self.yaw = 0.0
-        self.pitch = 0.0
-        self.position = Vector3()
+        self.yaw = yaw
+        self.pitch = pitch
+        self.position = position
         self.view_matrix = Matrix4()
 
         window.push_handlers(self.on_mouse_press, self.on_mouse_motion, self.on_key_press, self.on_key_release)
@@ -28,7 +29,14 @@ class Camera():
         self.yaw += dx * mousesensitivity
         self.pitch -= dy * mousesensitivity
 
+        if self.pitch > halfpi:
+            self.pitch = halfpi
+        if self.pitch < -halfpi:
+            self.pitch = -halfpi
+
         if self.mouse_locked:
+            if self.keys[key.LSHIFT]:
+                movementspeed *= 10
             if self.keys[key.W]:
                 self.position.x -= movementspeed * sin(self.yaw)
                 self.position.z += movementspeed * cos(self.yaw)
