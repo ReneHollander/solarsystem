@@ -20,7 +20,7 @@ model_matrix = Matrix4()
 proj_matrix = None
 mvp = Matrix4()
 
-orbitmod = 1000000.0
+orbitmod = 10000000.0
 radiusmod = 1000.0
 
 print(149597500 / orbitmod)

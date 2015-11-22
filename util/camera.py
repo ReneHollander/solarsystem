@@ -1,3 +1,5 @@
+from math import sin, cos
+from math import radians
 from euclid import *
 from pyglet.window import key, mouse, pyglet
 
@@ -12,46 +14,45 @@ class Camera():
         self.dx = 0
         self.dy = 0
 
-        self.view_matrix = Matrix4()
-        self.orientation = Quaternion()
+        self.yaw = 0.0
+        self.pitch = 0.0
         self.position = Vector3()
 
-    def update(self, delta):
-        speed = 300
-        speed *= delta / 1e1
+        self.view_matrix = Matrix4()
 
-        rotSpeed = 0.5 * speed
+    def update(self, delta):
+        movementspeed = 30 * delta
+        mousesensitivity = 0.01
 
         dx = self.get_dx()
         dy = self.get_dy()
 
-        if dy != 0:
-            self.orientation = Quaternion.new_rotate_axis(-dy * rotSpeed, Vector3(1, 0, 0)) * self.orientation
+        self.yaw += dx * mousesensitivity
+        self.pitch -= dy * mousesensitivity
 
-        if dx != 0:
-            self.orientation = Quaternion.new_rotate_axis(dx * rotSpeed, Vector3(0, 1, 0)) * self.orientation
-
-        self.orientation.normalize()
-
-        posDelta = Vector3()
         if self.mouse_locked:
             if self.keys[key.W]:
-                posDelta.z += speed
+                self.position.x -= movementspeed * sin(radians(self.yaw))
+                self.position.z += movementspeed * cos(radians(self.yaw))
             if self.keys[key.S]:
-                posDelta.z -= speed
+                self.position.x += movementspeed * sin(radians(self.yaw))
+                self.position.z -= movementspeed * cos(radians(self.yaw))
             if self.keys[key.A]:
-                posDelta.x += speed
+                self.position.x -= movementspeed * sin(radians(self.yaw - 90))
+                self.position.z += movementspeed * cos(radians(self.yaw - 90))
             if self.keys[key.D]:
-                posDelta.x -= speed
+                self.position.x -= movementspeed * sin(radians(self.yaw + 90))
+                self.position.z += movementspeed * cos(radians(self.yaw + 90))
             if self.keys[key.SPACE]:
-                posDelta.y -= speed
+                self.position.y -= movementspeed
             if self.keys[key.LCTRL]:
-                posDelta.y += speed
+                self.position.y += movementspeed
 
-        inverse = self.orientation.get_matrix().inverse().get_quaternion()
-        self.position += inverse * posDelta
+        matrix = Matrix4()
+        matrix.rotate_axis(self.pitch, Vector3(1, 0, 0))
+        matrix.rotate_axis(self.yaw, Vector3(0, 1, 0))
+        matrix.translate(self.position.x, self.position.y, self.position.z)
 
-        matrix = self.orientation.get_matrix().translate(self.position.x, self.position.y, self.position.z)
         self.view_matrix = matrix
 
     def on_key_press(self, symbol, modifiers):
