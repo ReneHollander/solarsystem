@@ -1,2 +1,1 @@
-euclid==0.1
 pyglet==1.2.4

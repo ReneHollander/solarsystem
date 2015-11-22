@@ -1,4 +1,4 @@
-!#/bin/bash
+#!/bin/bash
 
 virtualenv --python=python3.5 venv
 source venv/bin/activate
