@@ -9,16 +9,14 @@ class Camera():
         self.window = window
         self.keys = key.KeyStateHandler()
         self.mouse_locked = False
-        window.push_handlers(self.on_mouse_press, self.on_mouse_motion, self.on_key_press, self.on_key_release)
-
         self.dx = 0
         self.dy = 0
-
         self.yaw = 0.0
         self.pitch = 0.0
         self.position = Vector3()
-
         self.view_matrix = Matrix4()
+
+        window.push_handlers(self.on_mouse_press, self.on_mouse_motion, self.on_key_press, self.on_key_release)
 
     def update(self, delta):
         movementspeed = 30 * delta
@@ -32,17 +30,17 @@ class Camera():
 
         if self.mouse_locked:
             if self.keys[key.W]:
-                self.position.x -= movementspeed * sin(radians(self.yaw))
-                self.position.z += movementspeed * cos(radians(self.yaw))
+                self.position.x -= movementspeed * sin(self.yaw)
+                self.position.z += movementspeed * cos(self.yaw)
             if self.keys[key.S]:
-                self.position.x += movementspeed * sin(radians(self.yaw))
-                self.position.z -= movementspeed * cos(radians(self.yaw))
+                self.position.x += movementspeed * sin(self.yaw)
+                self.position.z -= movementspeed * cos(self.yaw)
             if self.keys[key.A]:
-                self.position.x -= movementspeed * sin(radians(self.yaw - 90))
-                self.position.z += movementspeed * cos(radians(self.yaw - 90))
+                self.position.x -= movementspeed * sin(self.yaw - 90)
+                self.position.z += movementspeed * cos(self.yaw - 90)
             if self.keys[key.D]:
-                self.position.x -= movementspeed * sin(radians(self.yaw + 90))
-                self.position.z += movementspeed * cos(radians(self.yaw + 90))
+                self.position.x -= movementspeed * sin(self.yaw + 90)
+                self.position.z += movementspeed * cos(self.yaw + 90)
             if self.keys[key.SPACE]:
                 self.position.y -= movementspeed
             if self.keys[key.LCTRL]:
