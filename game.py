@@ -61,7 +61,7 @@ def on_draw():
 
 def update(dt):
     global time
-    time += dt * 60 * 60 * 24 * 7
+    time += dt * 60 * 60 * 24 * 7 * camera.time_multiplier
     camera.update(dt)
     global mvp
     mvp = proj_matrix * camera.view_matrix * model_matrix

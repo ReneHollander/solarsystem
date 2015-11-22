@@ -3,7 +3,6 @@ from math import radians
 from euclid import *
 from pyglet.window import key, mouse, pyglet
 
-
 class Camera():
     def __init__(self, window):
         self.window = window
@@ -15,6 +14,8 @@ class Camera():
         self.pitch = 0.0
         self.position = Vector3()
         self.view_matrix = Matrix4()
+        self.time_multiplier = 1.0
+        self.time_multiplier_before_pause = 1.0
 
         window.push_handlers(self.on_mouse_press, self.on_mouse_motion, self.on_key_press, self.on_key_release)
 
@@ -59,6 +60,18 @@ class Camera():
             self.window.set_exclusive_mouse(False)
             self.mouse_locked = False
             return pyglet.event.EVENT_HANDLED
+        # Key code 43: Plus key
+        if symbol == key.NUM_ADD or symbol == 43:
+            self.time_multiplier += 0.1
+        # Key code 45: Minus key
+        if symbol == key.NUM_SUBTRACT or symbol == 45:
+            self.time_multiplier -= 0.1
+        if symbol == key.P:
+            if self.time_multiplier == 0:
+                self.time_multiplier = self.time_multiplier_before_pause
+            else:
+                self.time_multiplier_before_pause = self.time_multiplier
+                self.time_multiplier = 0
 
     def on_key_release(self, symbol, modifiers):
         self.keys[symbol] = False
