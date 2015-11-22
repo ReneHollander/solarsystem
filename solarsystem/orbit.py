@@ -1,6 +1,6 @@
+from abc import ABCMeta, abstractmethod
 from math import sin, cos, radians
 
-from abc import ABCMeta, abstractmethod
 from euclid import Vector3
 
 

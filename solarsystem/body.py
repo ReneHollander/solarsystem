@@ -1,7 +1,9 @@
 import math
 from abc import ABCMeta, abstractmethod
+
 from euclid import Vector3
 from pyglet.gl import *
+
 from util.mathhelper import toGlMatrix
 from util.texture import Texture
 

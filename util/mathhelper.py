@@ -1,4 +1,3 @@
-from euclid import Vector3
 from pyglet.gl import GLdouble
 
 

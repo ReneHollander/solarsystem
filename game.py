@@ -1,22 +1,31 @@
-import ctypes
+from math import floor
+
 import pyglet
 from euclid import *
 from pyglet.gl import *
+from pyglet.text import Label
+
 from solarsystem.body import OrbitingBody, StationaryBody
 from solarsystem.orbit import CircualOrbit
 from util.camera import Camera, halfpi
+from util.fpscounter import FPSCounter
 
 pyglet.resource.path = ['resource/texture']
 
 config = pyglet.gl.Config(sample_buffers=1, samples=8)
 window = pyglet.window.Window(800, 600, config=config, caption='Solarsystem', resizable=True, vsync=False)
-fps_display = pyglet.window.FPSDisplay(window)
+label_fpscounter = Label('', x=5, y=window.height - 5 - 12, font_size=12, bold=True, color=(127, 127, 127, 127))
+fps_counter = FPSCounter(window, label_fpscounter)
+
+label_timestep = Label('', x=10, y=10, font_size=18, bold=True, color=(127, 127, 127, 127))
+hudelements = [label_fpscounter, label_timestep]
 
 camera = Camera(window, position=Vector3(0, -400, 0), pitch=halfpi)
 model_matrix = Matrix4()
 proj_matrix = None
 mvp = Matrix4()
 
+timestep = 0
 time = 0
 
 orbitmod = 1000000.0
@@ -37,18 +46,15 @@ def on_resize(width, height):
     proj_matrix = Matrix4.new_perspective(45, float(width) / float(height), 0.1, 1000.0)
     glViewport(0, 0, width, height)
     glMatrixMode(GL_MODELVIEW)
+
+    label_fpscounter.y = window.height - 5 - 12
+
     return True
 
 
 @window.event
 def on_draw():
     window.clear()
-    lightfv = ctypes.c_float * 4
-    # glLightfv(GL_LIGHT0, GL_POSITION, lightfv(0, 0, 0, 0.0))
-    # glLightfv(GL_LIGHT0, GL_AMBIENT, lightfv(0.2, 0.2, 0.2, 1.0))
-    # glLightfv(GL_LIGHT0, GL_DIFFUSE, lightfv(0.5, 0.5, 0.5, 1.0))
-    # glEnable(GL_LIGHT0)
-    # glEnable(GL_LIGHTING)
     glEnable(GL_COLOR_MATERIAL)
     glEnable(GL_DEPTH_TEST)
     glShadeModel(GL_SMOOTH)
@@ -56,15 +62,35 @@ def on_draw():
     for planet in planets:
         planet.render(mvp.__copy__())
 
-    fps_display.draw()
+    # ====== START HUD ======
+    glMatrixMode(gl.GL_MODELVIEW)
+    glPushMatrix()
+    glLoadIdentity()
+    glMatrixMode(gl.GL_PROJECTION)
+    glPushMatrix()
+    glLoadIdentity()
+    glOrtho(0, window.width, 0, window.height, -1, 1)
+
+    for hudelement in hudelements:
+        hudelement.draw()
+
+    glPopMatrix()
+    glMatrixMode(gl.GL_MODELVIEW)
+    glPopMatrix()
+    # ====== STOP HUD ======
 
 
 def update(dt):
     global time
-    time += dt * 60 * 60 * 24 * 7 * camera.time_multiplier
-    camera.update(dt)
     global mvp
+
+    timestep = 60 * 60 * 24 * 7 * camera.time_multiplier
+    time += dt * timestep
+    label_timestep.text = "1 second = " + str(floor(timestep / 60 / 60)) + "hours"
+
+    camera.update(dt)
     mvp = proj_matrix * camera.view_matrix * model_matrix
+
     for planet in planets:
         planet.update(time)
 

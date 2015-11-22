@@ -1,4 +1,5 @@
 from math import sin, cos, pi
+
 from euclid import *
 from pyglet.window import key, mouse, pyglet
 
