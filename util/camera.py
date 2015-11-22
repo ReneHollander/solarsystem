@@ -19,6 +19,7 @@ class Camera():
         self.view_matrix = Matrix4()
         self.time_multiplier = 1.0
         self.time_multiplier_before_pause = 1.0
+        self.paused = False
 
         window.push_handlers(self.on_mouse_press, self.on_mouse_motion, self.on_key_press, self.on_key_release)
 
@@ -72,16 +73,25 @@ class Camera():
             return pyglet.event.EVENT_HANDLED
         # Key code 43: Plus key
         if symbol == key.NUM_ADD or symbol == 43:
-            self.time_multiplier += 0.1
+            if self.paused:
+                self.time_multiplier = self.time_multiplier_before_pause
+                self.paused = False
+            else:
+                self.time_multiplier += 0.1
         # Key code 45: Minus key
         if symbol == key.NUM_SUBTRACT or symbol == 45:
-            self.time_multiplier -= 0.1
+            if self.paused:
+                self.time_multiplier = self.time_multiplier_before_pause
+                self.paused = False
+            else:
+                self.time_multiplier -= 0.1
         if symbol == key.P:
-            if self.time_multiplier == 0:
+            if self.paused:
                 self.time_multiplier = self.time_multiplier_before_pause
             else:
                 self.time_multiplier_before_pause = self.time_multiplier
                 self.time_multiplier = 0
+            self.paused = not self.paused
 
     def on_key_release(self, symbol, modifiers):
         self.keys[symbol] = False
