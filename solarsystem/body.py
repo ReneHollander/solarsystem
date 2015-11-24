@@ -16,6 +16,7 @@ class Body(object, metaclass=ABCMeta):
         self.axial_tilt = axial_tilt
         self.sidereal_rotation_period = sidereal_rotation_period
         self.timefactor = 0
+        self.draw_orbit = True
 
         self.texture = Texture(self.name.lower() + ".jpg")
         self.sphere = gluNewQuadric()
@@ -69,16 +70,17 @@ class OrbitingBody(Body, metaclass=ABCMeta):
             self.xyz = self.orbit.calculate(time)
 
     def render(self, matrix):
-        linematrix = matrix.__copy__()
-        linematrix.translate(0, 0, 0)
-        if self.parent is not None:
-            linematrix.translate(self.parent.xyz.x, self.parent.xyz.z, self.parent.xyz.y)
-        linematrix.rotate_axis(math.radians(-90), Vector3(1, 0, 0))
+        if self.draw_orbit:
+            linematrix = matrix.__copy__()
+            linematrix.translate(0, 0, 0)
+            if self.parent is not None:
+                linematrix.translate(self.parent.xyz.x, self.parent.xyz.z, self.parent.xyz.y)
+            linematrix.rotate_axis(math.radians(-90), Vector3(1, 0, 0))
 
-        glLoadMatrixd(toGlMatrix(linematrix))
-        glLineWidth(2)
-        glColor3f(1.0, 0.0, 0.0)
-        self.orbit_line_batch.draw()
+            glLoadMatrixd(toGlMatrix(linematrix))
+            glLineWidth(2)
+            glColor3f(1.0, 0.0, 0.0)
+            self.orbit_line_batch.draw()
         glColor3f(1.0, 1.0, 1.0)
 
         matrix.translate(self.xyz.x, self.xyz.z, self.xyz.y)

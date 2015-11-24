@@ -17,9 +17,17 @@ label_fpscounter = Label('', x=5, y=window.height - 5 - 12, font_size=12, bold=T
 fps_counter = FPSCounter(window, label_fpscounter)
 
 label_timestep = Label('', x=10, y=10, font_size=18, bold=True, color=(127, 127, 127, 127))
+
+help_label = Label('', x=10, y=10, font_size=18, bold=True, color=(127, 127, 127, 127))
 hudelements = [label_fpscounter, label_timestep]
 
-camera = Camera(window, position=Vector3(0, -420, 0), pitch=halfpi)
+
+def toggle_draw_orbits():
+    for cur in planets:
+        cur.draw_orbit = not cur.draw_orbit
+
+
+camera = Camera(window, position=Vector3(0, -420, 0), pitch=halfpi, callbacks={'toggle_draw_orbits': toggle_draw_orbits})
 model_matrix = Matrix4()
 proj_matrix = None
 mvp = Matrix4()

@@ -7,7 +7,10 @@ halfpi = pi / 2.0
 
 
 class Camera():
-    def __init__(self, window, position=Vector3(), yaw=0.0, pitch=0.0):
+    def __init__(self, window, position=Vector3(), yaw=0.0, pitch=0.0, callbacks=None):
+        if not callbacks:
+            callbacks = {}
+        self.callbacks = callbacks
         self.window = window
         self.keys = key.KeyStateHandler()
         self.mouse_locked = False
@@ -40,6 +43,7 @@ class Camera():
 
         if self.mouse_locked:
             if self.keys[key.LSHIFT]:
+                # ...
                 movementspeed *= 10
             if self.keys[key.W]:
                 self.position.x -= movementspeed * sin(self.yaw)
@@ -92,6 +96,10 @@ class Camera():
                 self.time_multiplier_before_pause = self.time_multiplier
                 self.time_multiplier = 0
             self.paused = not self.paused
+        if symbol == key.O:
+            cb = self.callbacks['toggle_draw_orbits']
+            if cb is not None:
+                cb()
 
     def on_key_release(self, symbol, modifiers):
         self.keys[symbol] = False
