@@ -25,7 +25,7 @@ class Camera():
 
     def update(self, delta):
         movementspeed = 30 * delta
-        mousesensitivity = 0.01
+        mousesensitivity = 0.005
 
         dx = self.get_dx()
         dy = self.get_dy()

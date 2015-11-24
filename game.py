@@ -19,7 +19,7 @@ fps_counter = FPSCounter(window, label_fpscounter)
 label_timestep = Label('', x=10, y=10, font_size=18, bold=True, color=(127, 127, 127, 127))
 hudelements = [label_fpscounter, label_timestep]
 
-camera = Camera(window, position=Vector3(0, -400, 0), pitch=halfpi)
+camera = Camera(window, position=Vector3(0, -420, 0), pitch=halfpi)
 model_matrix = Matrix4()
 proj_matrix = None
 mvp = Matrix4()
@@ -31,7 +31,7 @@ orbitmod = 1000000.0
 radiusmod = 1000.0
 dts = 24 * 60 * 60
 
-sun = StationaryBody(None, "sun", 12)
+sun = StationaryBody(None, "sun", 12, 7.25, 25.83 * dts)
 mercury = OrbitingBody(sun, "mercury", 4879 / radiusmod, CircualOrbit(57909050 / orbitmod, 87.969 * dts, 3.38), 0.034, 58.646 * dts)
 venus = OrbitingBody(sun, "venus", 6051 / radiusmod, CircualOrbit(108939000 / orbitmod, 224.701 * dts, 3.86), 2.64, -243.025 * dts)
 earth = OrbitingBody(sun, "earth", 6371 / radiusmod, CircualOrbit(149597500 / orbitmod, 365.256363 * dts, 7.155), 23.4392811, 0.99726968 * dts)
@@ -65,10 +65,10 @@ def on_draw():
         planet.render(mvp.__copy__())
 
     # ====== START HUD ======
-    glMatrixMode(gl.GL_MODELVIEW)
+    glMatrixMode(GL_MODELVIEW)
     glPushMatrix()
     glLoadIdentity()
-    glMatrixMode(gl.GL_PROJECTION)
+    glMatrixMode(GL_PROJECTION)
     glPushMatrix()
     glLoadIdentity()
     glOrtho(0, window.width, 0, window.height, -1, 1)
@@ -77,7 +77,7 @@ def on_draw():
         hudelement.draw()
 
     glPopMatrix()
-    glMatrixMode(gl.GL_MODELVIEW)
+    glMatrixMode(GL_MODELVIEW)
     glPopMatrix()
     # ====== STOP HUD ======
 

@@ -9,6 +9,9 @@ class Orbit(object, metaclass=ABCMeta):
     def calculate(self, time):
         pass
 
+    def calculate_by_angle(self, angle):
+        pass
+
     def __str__(self):
         return "Orbit()"
 
@@ -20,9 +23,12 @@ class CircualOrbit(Orbit):
         self.inclination = inclination
 
     def calculate(self, time):
-        rot = radians(360 * ((time % self.orbital_period) / self.orbital_period))
-        x = self.radius * cos(rot)
-        y = self.radius * sin(rot)
+        return self.calculate_by_angle(360 * ((time % self.orbital_period) / self.orbital_period))
+
+    def calculate_by_angle(self, angle):
+        angle = radians(angle)
+        x = self.radius * cos(angle)
+        y = self.radius * sin(angle)
         pos = Vector3(x, y, 0)
         if self.inclination != 0:
             pos = pos.rotate_around(Vector3(0, 1, 0), radians(self.inclination))
