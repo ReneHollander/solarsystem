@@ -3,23 +3,26 @@ from math import floor
 import pyglet
 from euclid import *
 from pyglet.gl import *
-from pyglet.text import Label
+from pyglet.text import Label, HTMLLabel
 from solarsystem.body import OrbitingBody, StationaryBody
 from solarsystem.orbit import CircualOrbit
+from util import load_string
 from util.camera import Camera, halfpi
 from util.fpscounter import FPSCounter
 
-pyglet.resource.path = ['resource/texture']
+pyglet.resource.path = ['resource/texture', 'resource/text']
+pyglet.resource.reindex()
 
 config = pyglet.gl.Config(sample_buffers=1, samples=8, depth_size=24)
 window = pyglet.window.Window(800, 600, config=config, caption='Solarsystem', resizable=True, vsync=False)
+
 label_fpscounter = Label('', x=5, y=window.height - 5 - 12, font_size=12, bold=True, color=(127, 127, 127, 127))
 fps_counter = FPSCounter(window, label_fpscounter)
 
 label_timestep = Label('', x=10, y=10, font_size=18, bold=True, color=(127, 127, 127, 127))
+help_label = HTMLLabel(load_string('help.html'), x=5, y=window.height - 5 - 12 - 2 - 16)
 
-help_label = Label('', x=10, y=10, font_size=18, bold=True, color=(127, 127, 127, 127))
-hudelements = [label_fpscounter, label_timestep]
+hudelements = [label_fpscounter, label_timestep, help_label]
 
 
 def toggle_draw_orbits():
@@ -56,6 +59,7 @@ def on_resize(width, height):
     glMatrixMode(GL_MODELVIEW)
 
     label_fpscounter.y = window.height - 5 - 12
+    help_label.y = window.height - 5 - 12 - 2 - 16
 
     return True
 
