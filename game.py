@@ -4,7 +4,6 @@ import pyglet
 from euclid import *
 from pyglet.gl import *
 from pyglet.text import Label
-
 from solarsystem.body import OrbitingBody, StationaryBody
 from solarsystem.orbit import CircualOrbit
 from util.camera import Camera, halfpi
@@ -12,7 +11,7 @@ from util.fpscounter import FPSCounter
 
 pyglet.resource.path = ['resource/texture']
 
-config = pyglet.gl.Config(sample_buffers=1, samples=8)
+config = pyglet.gl.Config(sample_buffers=1, samples=8, depth_size=24)
 window = pyglet.window.Window(800, 600, config=config, caption='Solarsystem', resizable=True, vsync=False)
 label_fpscounter = Label('', x=5, y=window.height - 5 - 12, font_size=12, bold=True, color=(127, 127, 127, 127))
 fps_counter = FPSCounter(window, label_fpscounter)
@@ -31,12 +30,13 @@ time = 0
 orbitmod = 1000000.0
 radiusmod = 1000.0
 dts = 24 * 60 * 60
+
 sun = StationaryBody(None, "sun", 12)
-mercury = OrbitingBody(sun, "mercury", 4879 / radiusmod, CircualOrbit(57909050 / orbitmod, 87.969 * dts), 0.034, 58.646 * dts)
-venus = OrbitingBody(sun, "venus", 6051 / radiusmod, CircualOrbit(108939000 / orbitmod, 224.701 * dts), 2.64, -243.025 * dts)
-earth = OrbitingBody(sun, "earth", 6371 / radiusmod, CircualOrbit(149597500 / orbitmod, 365.256363 * dts), 23.4392811, 0.99726968 * dts)
-moon = OrbitingBody(earth, "moon", 1737 / radiusmod, CircualOrbit(3840000 * 4 / orbitmod, 29.530589 * dts), 6.687, 27.321582 * dts)
-mars = OrbitingBody(sun, "mars", 3398 / radiusmod, CircualOrbit(225000000 / orbitmod, 686.971 * dts), 25.19, 1.025957 * dts)
+mercury = OrbitingBody(sun, "mercury", 4879 / radiusmod, CircualOrbit(57909050 / orbitmod, 87.969 * dts, 3.38), 0.034, 58.646 * dts)
+venus = OrbitingBody(sun, "venus", 6051 / radiusmod, CircualOrbit(108939000 / orbitmod, 224.701 * dts, 3.86), 2.64, -243.025 * dts)
+earth = OrbitingBody(sun, "earth", 6371 / radiusmod, CircualOrbit(149597500 / orbitmod, 365.256363 * dts, 7.155), 23.4392811, 0.99726968 * dts)
+moon = OrbitingBody(earth, "moon", 1737 / radiusmod, CircualOrbit(3840000 * 4 / orbitmod, 29.530589 * dts, 5.145), 6.687, 27.321582 * dts)
+mars = OrbitingBody(sun, "mars", 3398 / radiusmod, CircualOrbit(225000000 / orbitmod, 686.971 * dts, 5.65), 25.19, 1.025957 * dts)
 planets = [sun, mercury, venus, earth, moon, mars]
 
 
@@ -55,8 +55,10 @@ def on_resize(width, height):
 @window.event
 def on_draw():
     window.clear()
-    glEnable(GL_COLOR_MATERIAL)
     glEnable(GL_DEPTH_TEST)
+    glEnable(GL_BLEND)
+    glEnable(GL_CULL_FACE)
+    glCullFace(GL_BACK)
     glShadeModel(GL_SMOOTH)
 
     for planet in planets:

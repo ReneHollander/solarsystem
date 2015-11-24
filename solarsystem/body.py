@@ -46,6 +46,8 @@ class OrbitingBody(Body, metaclass=ABCMeta):
         self.orbit = orbit
         self.axial_tilt = axial_tilt
         self.sidereal_rotation_period = sidereal_rotation_period
+        self.xyz = Vector3()
+        self.timefactor = 0
 
     def update(self, time):
         self.timefactor = (time % self.sidereal_rotation_period) / self.sidereal_rotation_period
