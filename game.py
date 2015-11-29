@@ -3,6 +3,7 @@ import pyglet
 from euclid import *
 from pyglet.gl import *
 from pyglet.text import Label, HTMLLabel
+
 from solarsystem.body import OrbitingBody, StationaryBody
 from solarsystem.orbit import CircualOrbit
 from util import load_string
@@ -21,7 +22,7 @@ fps_counter = FPSCounter(window, label_fpscounter)
 label_timestep = Label('', x=10, y=10, font_size=18, bold=True, color=(127, 127, 127, 127))
 help_label = HTMLLabel(load_string('help.html'), x=5, y=window.height - 5 - 12 - 2 - 16, width=300, multiline=True)
 
-hudelements = [label_fpscounter, label_timestep, help_label]
+hudelements = [label_fpscounter, label_timestep]
 
 
 def toggle_draw_orbits():
@@ -33,20 +34,15 @@ def toggle_draw_textures():
     for cur in planets:
         cur.draw_texture = not cur.draw_texture
 
-
-def toggle_help_label():
-    print("TODO Toggle Help Label")
-
-
 camera = Camera(window, position=Vector3(0, -420, 0), pitch=halfpi, callbacks={'toggle_draw_orbits': toggle_draw_orbits,
-                                                                               'toggle_draw_textures': toggle_draw_textures,
-                                                                               'toggle_help_label': toggle_help_label})
+                                                                               'toggle_draw_textures': toggle_draw_textures})
 model_matrix = Matrix4()
 proj_matrix = None
 mvp = Matrix4()
 
 timestep = 0
-time = 0
+solarsystem_time = 0
+time = solarsystem_time
 
 orbitmod = 1000000.0
 radiusmod = 1000.0
@@ -98,6 +94,9 @@ def on_draw():
     for hudelement in hudelements:
         hudelement.draw()
 
+    if camera.draw_help_label:
+        help_label.draw()
+
     glPopMatrix()
     glMatrixMode(GL_MODELVIEW)
     glPopMatrix()
@@ -105,19 +104,23 @@ def on_draw():
 
 
 def update(dt):
-    global time
+    global solarsystem_time
     global mvp
+    global time
 
     timestep = 60 * 60 * 24 * 7 * camera.time_multiplier
-    time += dt * timestep
+    solarsystem_time += dt * timestep
+    time += dt
     label_timestep.text = "1 second = " + str(floor(timestep / 60 / 60)) + "hours"
+
+    if not camera.toggled_help_label and time >= 5:
+        camera.toggled_help_label = False
+        camera.draw_help_label = False
 
     camera.update(dt)
     mvp = proj_matrix * camera.view_matrix * model_matrix
 
     for planet in planets:
-        planet.update(time)
-
-
+        planet.update(solarsystem_time)
 pyglet.clock.schedule(update)
 pyglet.app.run()

@@ -23,6 +23,8 @@ class Camera():
         self.time_multiplier = 1.0
         self.time_multiplier_before_pause = 1.0
         self.paused = False
+        self.draw_help_label = True
+        self.toggled_help_label = False
 
         window.push_handlers(self.on_mouse_press, self.on_mouse_motion, self.on_key_press, self.on_key_release)
 
@@ -105,9 +107,8 @@ class Camera():
             if cb is not None:
                 cb()
         if symbol == key.H:
-            cb = self.callbacks['toggle_help_label']
-            if cb is not None:
-                cb()
+            self.toggled_help_label = True
+            self.draw_help_label = not self.draw_help_label
 
     def on_key_release(self, symbol, modifiers):
         self.keys[symbol] = False
