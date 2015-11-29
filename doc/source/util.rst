@@ -12,14 +12,6 @@ util.camera module
     :undoc-members:
     :show-inheritance:
 
-util.fpscounter module
-----------------------
-
-.. automodule:: util.fpscounter
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
 util.mathhelper module
 ----------------------
 
@@ -28,10 +20,18 @@ util.mathhelper module
     :undoc-members:
     :show-inheritance:
 
-util.shader module
+util.fpscounter module
+----------------------
+
+.. automodule:: util.fpscounter
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+util.skybox module
 ------------------
 
-.. automodule:: util.shader
+.. automodule:: util.skybox
     :members:
     :undoc-members:
     :show-inheritance:

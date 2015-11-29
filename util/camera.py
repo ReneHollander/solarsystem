@@ -1,3 +1,9 @@
+"""
+Created on 03.11.2015
+
+:author: Hollander, Kalauner 5BHIT
+
+"""
 from math import sin, cos, pi
 
 from euclid import *
@@ -6,8 +12,20 @@ from pyglet.window import key, mouse, pyglet
 halfpi = pi / 2.0
 
 
-class Camera():
+class Camera(object):
+    """
+    Handles the camera
+    """
     def __init__(self, window, position=Vector3(), yaw=0.0, pitch=0.0, callbacks=None):
+        """
+        Initializes the camera
+
+        :param window: window instance
+        :param position: position as Vector3
+        :param yaw: yaw
+        :param pitch: pitch
+        :param callbacks: methods to turn orbits and textures on and off
+        """
         if not callbacks:
             callbacks = {}
         self.callbacks = callbacks
@@ -29,6 +47,11 @@ class Camera():
         window.push_handlers(self.on_mouse_press, self.on_mouse_motion, self.on_key_press, self.on_key_release)
 
     def update(self, delta):
+        """
+        updates the camera position
+
+        :param delta: delta camera position
+        """
         movementspeed = 30 * delta
         mousesensitivity = 0.005
 
@@ -72,6 +95,11 @@ class Camera():
         self.view_matrix = matrix
 
     def on_key_press(self, symbol, modifiers):
+        """
+        Keypress handler
+
+        :param symbol: pressed symbol
+        """
         self.keys[symbol] = True
         if symbol == key.ESCAPE:
             self.window.set_exclusive_mouse(False)
@@ -117,24 +145,54 @@ class Camera():
             self.draw_help_label = not self.draw_help_label
 
     def on_key_release(self, symbol, modifiers):
+        """
+        called on released key
+
+        :param symbol: released key
+        """
         self.keys[symbol] = False
 
     def on_mouse_press(self, x, y, button, modifiers):
+        """
+        called on mouse press
+
+        :param x: x location of cursor
+        :param y: y location of cursor
+        :param button: pressed mouse button
+        """
         if button == mouse.LEFT:
             self.window.set_exclusive_mouse(True)
             self.mouse_locked = True
 
     def get_dx(self):
+        """
+        gets delta x and resets it to 0
+
+        :return: delta x
+        """
         tmp = self.dx
         self.dx = 0
         return tmp
 
     def get_dy(self):
+        """
+        gets delta y and resets it to 0
+
+        :return: delta y
+        """
         tmp = self.dy
         self.dy = 0
         return tmp
 
     def on_mouse_motion(self, x, y, dx, dy):
+        """
+        called on mouse movement
+
+        :param x: x location
+        :param y: y location
+        :param dx: delta x
+        :param dy: delta y
+        """
         if self.mouse_locked:
             self.dx += dx
             self.dy += dy
