@@ -52,7 +52,11 @@ class EllipticOrbit(Orbit):
         self.r = self.semi_major_axis * (1 - e ** 2) / (1 + e * cos(self.true_anomaly))
 
     def calculate(self, time):
-        rot = radians(360 * ((time % self.orbital_period) / self.orbital_period))
+        rot = 360 * ((time % self.orbital_period) / self.orbital_period)
+        return self.calculate_by_angle(rot)
+
+    def calculate_by_angle(self, rot):
+        rot = radians(rot)
         x = self.r * (cos(self.longtitude_ascending_node) * cos(self.true_anomaly + self.perihelion) - sin(self.longtitude_ascending_node) * sin(self.true_anomaly + self.perihelion) * cos(self.inclination))
         y = self.r * (sin(self.longtitude_ascending_node) * cos(self.true_anomaly + self.perihelion) + cos(self.longtitude_ascending_node) * sin(self.true_anomaly + self.perihelion) * cos(self.inclination))
         z = self.r * sin(self.true_anomaly + self.perihelion) * sin(self.inclination)
