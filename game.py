@@ -22,7 +22,7 @@ label_fpscounter = Label('', x=5, y=window.height - 5 - 12, font_size=12, bold=T
 fps_counter = FPSCounter(window, label_fpscounter)
 
 label_timestep = Label('', x=10, y=10, font_size=18, bold=True, color=(127, 127, 127, 127))
-help_label = HTMLLabel(load_string('help.html'), x=5, y=window.height - 5 - 12 - 2 - 16, width=400, multiline=True)
+help_label = Label(load_string('help.txt'), font_size=16, x=5, y=window.height - 5 - 12 - 2 - 16, color=(170, 170, 170, 255), width=400, multiline=True)
 
 hudelements = [label_fpscounter, label_timestep]
 

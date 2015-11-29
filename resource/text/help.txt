@@ -1,0 +1,13 @@
+W		Forwards
+S		Backwards
+A		Left
+D		Right
+Space	Up
+Ctrl		Down
+Shift		Fast-Travel
++		Increase speed
+-		Decrease speed
+P		Pause/Unpause
+E		Toggle orbits
+T		Toggle textures and skybox
+H		Toggle help menu
