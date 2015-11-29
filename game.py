@@ -20,7 +20,7 @@ label_fpscounter = Label('', x=5, y=window.height - 5 - 12, font_size=12, bold=T
 fps_counter = FPSCounter(window, label_fpscounter)
 
 label_timestep = Label('', x=10, y=10, font_size=18, bold=True, color=(127, 127, 127, 127))
-help_label = HTMLLabel(load_string('help.html'), x=5, y=window.height - 5 - 12 - 2 - 16, width=300, multiline=True)
+help_label = HTMLLabel(load_string('help.html'), x=5, y=window.height - 5 - 12 - 2 - 16, width=400, multiline=True)
 
 hudelements = [label_fpscounter, label_timestep]
 
@@ -122,7 +122,7 @@ def update(dt):
     time += dt
     label_timestep.text = "1 second = " + str(floor(timestep / 60 / 60)) + "hours"
 
-    if not camera.toggled_help_label and time >= 5:
+    if not camera.toggled_help_label and time >= 10:
         camera.draw_help_label = False
 
     camera.update(dt)
