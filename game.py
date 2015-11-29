@@ -29,11 +29,17 @@ def toggle_draw_orbits():
         cur.draw_orbit = not cur.draw_orbit
 
 
+def toggle_draw_textures():
+    for cur in planets:
+        cur.draw_texture = not cur.draw_texture
+
+
 def toggle_help_label():
     print("TODO Toggle Help Label")
 
 
 camera = Camera(window, position=Vector3(0, -420, 0), pitch=halfpi, callbacks={'toggle_draw_orbits': toggle_draw_orbits,
+                                                                               'toggle_draw_textures': toggle_draw_textures,
                                                                                'toggle_help_label': toggle_help_label})
 model_matrix = Matrix4()
 proj_matrix = None

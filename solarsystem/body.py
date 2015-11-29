@@ -17,6 +17,7 @@ class Body(object, metaclass=ABCMeta):
         self.sidereal_rotation_period = sidereal_rotation_period
         self.timefactor = 0
         self.draw_orbit = True
+        self.draw_texture = True
 
         self.texture = Texture(self.name.lower() + ".jpg")
         self.sphere = gluNewQuadric()
@@ -32,7 +33,8 @@ class Body(object, metaclass=ABCMeta):
         matrix.rotate_axis(math.radians(self.axial_tilt), Vector3(0, 1, 0))
         matrix.rotate_axis(math.radians(-360 * self.timefactor), Vector3(0, 0, 1))
         glLoadMatrixd(toGlMatrix(matrix))
-        self.texture.draw()
+        if self.draw_texture:
+            self.texture.draw()
         gluSphere(self.sphere, self.radius, 50, 50)
         glDisable(GL_TEXTURE_2D)
 

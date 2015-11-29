@@ -100,6 +100,10 @@ class Camera():
             cb = self.callbacks['toggle_draw_orbits']
             if cb is not None:
                 cb()
+        if symbol == key.T:
+            cb = self.callbacks['toggle_draw_textures']
+            if cb is not None:
+                cb()
         if symbol == key.H:
             cb = self.callbacks['toggle_help_label']
             if cb is not None:
