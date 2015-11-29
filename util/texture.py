@@ -2,19 +2,20 @@ from pyglet.gl import *
 
 
 class Texture(object):
-    def __init__(self, path):
+    def __init__(self, path, mipmaps=False):
+        self.mipmaps = mipmaps
         self.image_name = path.split('/')[-1]
         self.image = pyglet.resource.image(self.image_name)
         self.texture = self.image.texture
         self.verify_dimensions()
-        glGenerateMipmap(self.texture.target)
+        if self.mipmaps:
+            glGenerateMipmap(self.texture.target)
 
     def draw(self):
         glEnable(self.texture.target)
         glBindTexture(self.texture.target, self.texture.id)
-        glTexParameterf(self.texture.target, gl.GL_TEXTURE_WRAP_S, gl.GL_CLAMP)
-        glTexParameterf(self.texture.target, gl.GL_TEXTURE_WRAP_T, gl.GL_CLAMP)
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR)
+        if self.mipmaps:
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR)
 
     def verify_dimensions(self):
         self.verify('width')

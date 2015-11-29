@@ -9,6 +9,8 @@ from solarsystem.orbit import CircualOrbit
 from util import load_string
 from util.camera import Camera, halfpi
 from util.fpscounter import FPSCounter
+from util.mathhelper import toGlMatrix
+from util.skybox import SkySphere
 
 pyglet.resource.path = ['resource/texture', 'resource/text']
 pyglet.resource.reindex()
@@ -24,6 +26,8 @@ help_label = HTMLLabel(load_string('help.html'), x=5, y=window.height - 5 - 12 -
 
 hudelements = [label_fpscounter, label_timestep]
 
+draw_skybox = True
+
 
 def toggle_draw_orbits():
     for cur in planets:
@@ -31,6 +35,8 @@ def toggle_draw_orbits():
 
 
 def toggle_draw_textures():
+    global draw_skybox
+    draw_skybox = not draw_skybox
     for cur in planets:
         cur.draw_texture = not cur.draw_texture
 
@@ -48,6 +54,8 @@ time = solarsystem_time
 orbitmod = 1000000.0
 radiusmod = 1000.0
 dts = 24 * 60 * 60
+
+skybox = SkySphere("milkyway.jpg", 5500)
 
 sun = StationaryBody(None, "sun", {"r": 250, "g": 150, "b": 26}, 12, 7.25, 25.83 * dts)
 mercury = OrbitingBody(sun, "mercury", {"r": 159, "g": 141, "b": 127}, 4879 / radiusmod, CircualOrbit(57909050 / orbitmod, 87.969 * dts, 3.38), 0.034, 58.646 * dts)
@@ -69,7 +77,7 @@ planets = [sun, mercury, venus, earth, moon, mars, ceres, jupiter, saturn, uranu
 @window.event
 def on_resize(width, height):
     global proj_matrix
-    proj_matrix = Matrix4.new_perspective(45, float(width) / float(height), 0.1, 10000.0)
+    proj_matrix = Matrix4.new_perspective(45, float(width) / float(height), 0.1, 16000.0)
     glViewport(0, 0, width, height)
     glMatrixMode(GL_MODELVIEW)
 
@@ -86,7 +94,18 @@ def on_draw():
     glEnable(GL_BLEND)
     glEnable(GL_CULL_FACE)
     glCullFace(GL_BACK)
+    glEnable(GL_COLOR_MATERIAL)
     glShadeModel(GL_SMOOTH)
+
+    if draw_skybox:
+        skybox_matrix = mvp.__copy__()
+        skybox_matrix.rotate_axis(math.radians(-90), Vector3(1, 0, 0))
+        glLoadMatrixd(toGlMatrix(skybox_matrix))
+        skybox.draw()
+
+    glEnable(GL_DEPTH_TEST)
+    glEnable(GL_BLEND)
+    glEnable(GL_CULL_FACE)
 
     for planet in planets:
         planet.render(mvp.__copy__())

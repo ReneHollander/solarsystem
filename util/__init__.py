@@ -1,5 +1,9 @@
+import ctypes
+
 import pyglet
 from pyglet.text import decode_html
+
+lightfv = ctypes.c_float * 4
 
 
 def load_string(filename):

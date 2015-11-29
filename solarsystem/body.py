@@ -37,7 +37,6 @@ class Body(object, metaclass=ABCMeta):
         if self.draw_texture:
             self.texture.draw()
         else:
-            print(self.color)
             glColor3f(self.color["r"] / 255.0, self.color["g"] / 255.0, self.color["b"] / 255.0)
 
         gluSphere(self.sphere, self.radius, 50, 50)
@@ -88,6 +87,7 @@ class OrbitingBody(Body, metaclass=ABCMeta):
             glLineWidth(2)
             glColor3f(1.0, 0.0, 0.0)
             self.orbit_line_batch.draw()
+
         glColor3f(1.0, 1.0, 1.0)
 
         matrix.translate(self.xyz.x, self.xyz.z, self.xyz.y)
