@@ -9,9 +9,10 @@ from util.texture import Texture
 
 
 class Body(object, metaclass=ABCMeta):
-    def __init__(self, parent, name, radius, axial_tilt, sidereal_rotation_period):
+    def __init__(self, parent, name, color, radius, axial_tilt, sidereal_rotation_period):
         self.parent = parent
         self.name = name
+        self.color = color
         self.radius = radius
         self.axial_tilt = axial_tilt
         self.sidereal_rotation_period = sidereal_rotation_period
@@ -35,13 +36,17 @@ class Body(object, metaclass=ABCMeta):
         glLoadMatrixd(toGlMatrix(matrix))
         if self.draw_texture:
             self.texture.draw()
+        else:
+            print(self.color)
+            glColor3f(self.color["r"] / 255.0, self.color["g"] / 255.0, self.color["b"] / 255.0)
+
         gluSphere(self.sphere, self.radius, 50, 50)
         glDisable(GL_TEXTURE_2D)
 
 
 class StationaryBody(Body, metaclass=ABCMeta):
-    def __init__(self, parent, name, radius, axial_tilt, sidereal_rotation_period, xyz=Vector3()):
-        super().__init__(parent, name, radius, axial_tilt, sidereal_rotation_period)
+    def __init__(self, parent, name, color, radius, axial_tilt, sidereal_rotation_period, xyz=Vector3()):
+        super().__init__(parent, name, color, radius, axial_tilt, sidereal_rotation_period)
         self.xyz = xyz
 
     def render(self, matrix):
@@ -50,8 +55,8 @@ class StationaryBody(Body, metaclass=ABCMeta):
 
 
 class OrbitingBody(Body, metaclass=ABCMeta):
-    def __init__(self, parent, name, radius, orbit, axial_tilt, sidereal_rotation_period):
-        super().__init__(parent, name, radius, axial_tilt, sidereal_rotation_period)
+    def __init__(self, parent, name, color, radius, orbit, axial_tilt, sidereal_rotation_period):
+        super().__init__(parent, name, color, radius, axial_tilt, sidereal_rotation_period)
         self.orbit = orbit
         self.orbit_line_batch = Batch()
         self.xyz = Vector3()
