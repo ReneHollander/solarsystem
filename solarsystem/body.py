@@ -195,8 +195,8 @@ class OrbitingBody(Body, metaclass=ABCMeta):
             linematrix.rotate_axis(math.radians(-90), Vector3(1, 0, 0))
 
             glLoadMatrixd(toGlMatrix(linematrix))
-            glLineWidth(2)
-            glColor3f(1.0, 0.0, 0.0)
+            glLineWidth(1.25)
+            glColor3f(self.color["r"] / 255.0, self.color["g"] / 255.0, self.color["b"] / 255.0)
             self.orbit_line_batch.draw()
 
         glColor3f(1.0, 1.0, 1.0)
