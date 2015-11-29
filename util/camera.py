@@ -83,14 +83,20 @@ class Camera():
                 self.time_multiplier = self.time_multiplier_before_pause
                 self.paused = False
             else:
-                self.time_multiplier += 0.1
+                if self.keys[key.LSHIFT]:
+                    self.time_multiplier += 1.0
+                else:
+                    self.time_multiplier += 0.1
         # Key code 45: Minus key
         if symbol == key.NUM_SUBTRACT or symbol == 45:
             if self.paused:
                 self.time_multiplier = self.time_multiplier_before_pause
                 self.paused = False
             else:
-                self.time_multiplier -= 0.1
+                if self.keys[key.LSHIFT]:
+                    self.time_multiplier -= 1.0
+                else:
+                    self.time_multiplier -= 0.1
         if symbol == key.P:
             if self.paused:
                 self.time_multiplier = self.time_multiplier_before_pause
