@@ -129,7 +129,6 @@ def on_draw():
     # draw skybox if requested
     if draw_skybox:
         skybox_matrix = mvp.__copy__()
-        print(camera.position)
         skybox_matrix.translate(-camera.position.x, -camera.position.y, -camera.position.z)
         skybox_matrix.rotate_axis(math.radians(-90), Vector3(1, 0, 0))
         glLoadMatrixd(toGlMatrix(skybox_matrix))
