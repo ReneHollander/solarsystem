@@ -1,5 +1,4 @@
 from math import floor
-
 import pyglet
 from euclid import *
 from pyglet.gl import *
@@ -20,7 +19,7 @@ label_fpscounter = Label('', x=5, y=window.height - 5 - 12, font_size=12, bold=T
 fps_counter = FPSCounter(window, label_fpscounter)
 
 label_timestep = Label('', x=10, y=10, font_size=18, bold=True, color=(127, 127, 127, 127))
-help_label = HTMLLabel(load_string('help.html'), x=5, y=window.height - 5 - 12 - 2 - 16)
+help_label = HTMLLabel(load_string('help.html'), x=5, y=window.height - 5 - 12 - 2 - 16, width=300, multiline=True)
 
 hudelements = [label_fpscounter, label_timestep, help_label]
 
@@ -30,7 +29,12 @@ def toggle_draw_orbits():
         cur.draw_orbit = not cur.draw_orbit
 
 
-camera = Camera(window, position=Vector3(0, -420, 0), pitch=halfpi, callbacks={'toggle_draw_orbits': toggle_draw_orbits})
+def toggle_help_label():
+    print("TODO Toggle Help Label")
+
+
+camera = Camera(window, position=Vector3(0, -420, 0), pitch=halfpi, callbacks={'toggle_draw_orbits': toggle_draw_orbits,
+                                                                               'toggle_help_label': toggle_help_label})
 model_matrix = Matrix4()
 proj_matrix = None
 mvp = Matrix4()
