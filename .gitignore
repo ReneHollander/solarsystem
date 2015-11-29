@@ -3,3 +3,4 @@ venv/
 *.iml
 *.pyc
 doc/build
+doc/source/_build

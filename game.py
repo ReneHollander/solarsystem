@@ -3,9 +3,9 @@ from math import floor
 import pyglet
 from euclid import *
 from pyglet.gl import *
-from pyglet.text import Label, HTMLLabel
+from pyglet.text import Label
 from solarsystem.body import OrbitingBody, StationaryBody
-from solarsystem.orbit import CircualOrbit
+from solarsystem.orbit import CircularOrbit
 from util import load_string
 from util.camera import Camera, halfpi
 from util.fpscounter import FPSCounter
@@ -58,19 +58,19 @@ dts = 24 * 60 * 60
 skybox = SkySphere("milkyway.jpg", 5500)
 
 sun = StationaryBody(None, "sun", {"r": 250, "g": 150, "b": 26}, 12, 7.25, 25.83 * dts)
-mercury = OrbitingBody(sun, "mercury", {"r": 159, "g": 141, "b": 127}, 4879 / radiusmod, CircualOrbit(57909050 / orbitmod, 87.969 * dts, 3.38), 0.034, 58.646 * dts)
-venus = OrbitingBody(sun, "venus", {"r": 146, "g": 71, "b": 14}, 6051 / radiusmod, CircualOrbit(108939000 / orbitmod, 224.701 * dts, 3.86), 2.64, -243.025 * dts)
-earth = OrbitingBody(sun, "earth", {"r": 22, "g": 17, "b": 39}, 6371 / radiusmod, CircualOrbit(149597500 / orbitmod, 365.256363 * dts, 7.155), 23.4392811, 0.99726968 * dts)
-moon = OrbitingBody(earth, "moon", {"r": 118, "g": 118, "b": 118}, 1737 / radiusmod, CircualOrbit(3840000 * 4 / orbitmod, 29.530589 * dts, 5.145), 6.687, 27.321582 * dts)
-mars = OrbitingBody(sun, "mars", {"r": 114, "g": 90, "b": 66}, 3398 / radiusmod, CircualOrbit(225000000 / orbitmod, 686.971 * dts, 5.65), 25.19, 1.025957 * dts)
-ceres = OrbitingBody(sun, "ceres", {"r": 182, "g": 165, "b": 149}, 473 / radiusmod, CircualOrbit(414015000 / orbitmod / 1.3, 1681.63 * dts, 9.20), 4, 0.3781 * dts)
-jupiter = OrbitingBody(sun, "jupiter", {"r": 192, "g": 161, "b": 133}, 66854 / radiusmod / 5, CircualOrbit(778547200 / orbitmod / 2, 4332.59 * dts, 6.09), 3.13, 0.4135 * dts)
-saturn = OrbitingBody(sun, "saturn", {"r": 215, "g": 191, "b": 147}, 58232 / radiusmod / 5, CircualOrbit(1433449369 / orbitmod / 2, 10759.22 * dts, 5.51), 26.73, 0.4395 * dts)
-uranus = OrbitingBody(sun, "uranus", {"r": 160, "g": 209, "b": 216}, 25362 / radiusmod / 2, CircualOrbit(2875 / 2, 30688 * dts, 6.48), 97.77, 0.71833 * dts)
-neptune = OrbitingBody(sun, "neptune", {"r": 61, "g": 108, "b": 200}, 24622 / radiusmod / 2, CircualOrbit(4498542650 / orbitmod / 2, 60190 * dts, 6.43), 28.32, 0.6713 * dts)
-pluto = OrbitingBody(sun, "pluto", {"r": 174, "g": 131, "b": 97}, 1187 / radiusmod * 3, CircualOrbit(5907 / 2, 90581 * dts, 11.88), 119.591, 6.387230 * dts)
-makemake = OrbitingBody(sun, "makemake", {"r": 137, "g": 81, "b": 68}, 715 / radiusmod * 3, CircualOrbit(6857 / 2, 112897 * dts, 29.00685), 0, 0.3237 * dts)
-eris = OrbitingBody(sun, "eris", {"r": 162, "g": 180, "b": 190}, 1163 / radiusmod * 3, CircualOrbit(10167 / 2, 203830 * dts, 44.0445), 0, 1.0791 * dts)
+mercury = OrbitingBody(sun, "mercury", {"r": 159, "g": 141, "b": 127}, 4879 / radiusmod, CircularOrbit(57909050 / orbitmod, 87.969 * dts, 3.38), 0.034, 58.646 * dts)
+venus = OrbitingBody(sun, "venus", {"r": 146, "g": 71, "b": 14}, 6051 / radiusmod, CircularOrbit(108939000 / orbitmod, 224.701 * dts, 3.86), 2.64, -243.025 * dts)
+earth = OrbitingBody(sun, "earth", {"r": 22, "g": 17, "b": 39}, 6371 / radiusmod, CircularOrbit(149597500 / orbitmod, 365.256363 * dts, 7.155), 23.4392811, 0.99726968 * dts)
+moon = OrbitingBody(earth, "moon", {"r": 118, "g": 118, "b": 118}, 1737 / radiusmod, CircularOrbit(3840000 * 4 / orbitmod, 29.530589 * dts, 5.145), 6.687, 27.321582 * dts)
+mars = OrbitingBody(sun, "mars", {"r": 114, "g": 90, "b": 66}, 3398 / radiusmod, CircularOrbit(225000000 / orbitmod, 686.971 * dts, 5.65), 25.19, 1.025957 * dts)
+ceres = OrbitingBody(sun, "ceres", {"r": 182, "g": 165, "b": 149}, 473 / radiusmod, CircularOrbit(414015000 / orbitmod / 1.3, 1681.63 * dts, 9.20), 4, 0.3781 * dts)
+jupiter = OrbitingBody(sun, "jupiter", {"r": 192, "g": 161, "b": 133}, 66854 / radiusmod / 5, CircularOrbit(778547200 / orbitmod / 2, 4332.59 * dts, 6.09), 3.13, 0.4135 * dts)
+saturn = OrbitingBody(sun, "saturn", {"r": 215, "g": 191, "b": 147}, 58232 / radiusmod / 5, CircularOrbit(1433449369 / orbitmod / 2, 10759.22 * dts, 5.51), 26.73, 0.4395 * dts)
+uranus = OrbitingBody(sun, "uranus", {"r": 160, "g": 209, "b": 216}, 25362 / radiusmod / 2, CircularOrbit(2875 / 2, 30688 * dts, 6.48), 97.77, 0.71833 * dts)
+neptune = OrbitingBody(sun, "neptune", {"r": 61, "g": 108, "b": 200}, 24622 / radiusmod / 2, CircularOrbit(4498542650 / orbitmod / 2, 60190 * dts, 6.43), 28.32, 0.6713 * dts)
+pluto = OrbitingBody(sun, "pluto", {"r": 174, "g": 131, "b": 97}, 1187 / radiusmod * 3, CircularOrbit(5907 / 2, 90581 * dts, 11.88), 119.591, 6.387230 * dts)
+makemake = OrbitingBody(sun, "makemake", {"r": 137, "g": 81, "b": 68}, 715 / radiusmod * 3, CircularOrbit(6857 / 2, 112897 * dts, 29.00685), 0, 0.3237 * dts)
+eris = OrbitingBody(sun, "eris", {"r": 162, "g": 180, "b": 190}, 1163 / radiusmod * 3, CircularOrbit(10167 / 2, 203830 * dts, 44.0445), 0, 1.0791 * dts)
 planets = [sun, mercury, venus, earth, moon, mars, ceres, jupiter, saturn, uranus, neptune, pluto, makemake, eris]
 
 
@@ -108,7 +108,7 @@ def on_draw():
     glEnable(GL_CULL_FACE)
 
     for planet in planets:
-        planet.render(mvp.__copy__())
+        planet.draw(mvp.__copy__())
 
     # ====== START HUD ======
     glMatrixMode(GL_MODELVIEW)
