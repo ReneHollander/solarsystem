@@ -35,7 +35,7 @@ class Orbit(object, metaclass=ABCMeta):
         :param angle: current angle in orbit
         :type angle: float
         :return: position
-        :rtype Vector3
+        :rtype: Vector3
         """
 
         pass
@@ -84,7 +84,7 @@ class CircularOrbit(Orbit):
         :param angle: current angle in orbit
         :type angle: float
         :return: position
-        :rtype Vector3
+        :rtype: Vector3
         """
 
         angle = radians(angle)
