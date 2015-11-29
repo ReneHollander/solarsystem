@@ -114,7 +114,6 @@ def update(dt):
     label_timestep.text = "1 second = " + str(floor(timestep / 60 / 60)) + "hours"
 
     if not camera.toggled_help_label and time >= 5:
-        camera.toggled_help_label = False
         camera.draw_help_label = False
 
     camera.update(dt)
