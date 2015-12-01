@@ -7,6 +7,7 @@ Ctrl		Down
 Shift		Fast-Travel
 +		Increase speed
 -		Decrease speed
+F11		Toggle fullscreen
 P		Pause/Unpause
 O		Toggle orbits
 T		Toggle textures and skybox
