@@ -1,3 +1,9 @@
+"""
+Created on 1.12.2015
+
+:author: Rene Hollander
+"""
+
 import math
 
 from abc import ABCMeta, abstractmethod
@@ -8,12 +14,30 @@ from util.texture import Texture
 
 
 class Renderer(metaclass=ABCMeta):
+    """
+    An abstract class that gets inherited from all Renderer
+    """
+
     @abstractmethod
     def draw(self, body, matrix):
+        """
+        Draw the supplied body with the specified MVP Matrix
+
+        :param body: The body to render
+        :type body: :class:`solarsystem.body.Body`
+        :param matrix:
+        :type matrix: :class:`euclid.Matrix4`
+        :return: None
+        """
+
         pass
 
 
 class BodyRenderer(Renderer):
+    """
+    Renders the body at a fixed position given by the MVP matrix
+    """
+
     def draw(self, body, matrix):
         matrix.rotate_axis(math.radians(-90), Vector3(1, 0, 0))
         matrix.rotate_axis(math.radians(body.axial_tilt), Vector3(0, 1, 0))
@@ -29,6 +53,10 @@ class BodyRenderer(Renderer):
 
 
 class OrbitingBodyRenderer(BodyRenderer):
+    """
+    Renders the body at the current position in orbit. If :draw_orbit is true, the orbit will be plotted,
+    """
+
     def draw(self, body, matrix):
         # draw the in the constructor plotted line if requested
         if body.draw_orbit:
@@ -50,6 +78,11 @@ class OrbitingBodyRenderer(BodyRenderer):
 
 
 class OrbitingBodyWithRingRenderer(OrbitingBodyRenderer):
+    """
+    Renders the body at the current position in orbit. If :draw_orbit is true, the orbit will be plotted,
+    The parameters for the rings are set with setup_ring_renderer
+    """
+
     def draw(self, body, mat):
         matrix = mat.__copy__()
         matrix.translate(body.xyz.x, body.xyz.z, body.xyz.y)
@@ -59,7 +92,7 @@ class OrbitingBodyWithRingRenderer(OrbitingBodyRenderer):
         glDisable(GL_DEPTH_TEST)
         glDisable(GL_CULL_FACE)
         body.ring_texture.draw()
-        gluDisk(body.ring_disk, body.ring_inner_size, body.ring_outer_size, 50, 50)
+        gluDisk(body.ring_disk, body.ring_inner_radius, body.ring_outer_radius, 50, 50)
         glEnable(GL_CULL_FACE)
         glEnable(GL_DEPTH_TEST)
         glDisable(GL_TEXTURE_2D)
@@ -67,9 +100,22 @@ class OrbitingBodyWithRingRenderer(OrbitingBodyRenderer):
         super().draw(body, mat)
 
 
-def setup_ring_renderer(ring_inner_size, ring_outer_size, body):
-    body.ring_inner_size = ring_inner_size
-    body.ring_outer_size = ring_outer_size
+def setup_ring_renderer(ring_inner_radius, ring_outer_radius, body):
+    """
+    Sets the needed parameters for the OrbitingBodyWithRingRenderer.
+
+    :param ring_inner_radius: Inner radius of the rings
+    :type ring_inner_radius: float
+    :param ring_outer_radius: Outer radius of the rings
+    :type ring_outer_radius: float
+    :param body: Body to apply these parameters to
+    :type body: :class:`solarsystem.body.Body`
+    :return: Supplied body
+    :rtype: :class:`solarsystem.body.Body`
+    """
+
+    body.ring_inner_radius = ring_inner_radius
+    body.ring_outer_radius = ring_outer_radius
     body.ring_texture = Texture(body.name + "_ring" + ".png")
     body.ring_disk = gluNewQuadric()
     gluQuadricNormals(body.ring_disk, GLU_SMOOTH)

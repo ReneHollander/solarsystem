@@ -1,7 +1,7 @@
 """
 Created on 03.11.2015
 
-:author: Hollander, Kalauner 5BHIT
+:author: Rene Hollander, Paul Kalauner
 
 """
 from math import sin, cos, pi

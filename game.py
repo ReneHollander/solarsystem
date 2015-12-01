@@ -1,3 +1,9 @@
+"""
+Created on 04.11.2015
+
+:author: Rene Hollander, Paul Kalauner
+"""
+
 from math import floor
 
 import pyglet
