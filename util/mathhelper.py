@@ -3,6 +3,8 @@ Created on 04.11.2015
 
 :author: Rene Hollander
 """
+from math import cos, sqrt, atan, tan
+from math import sin
 
 from pyglet.gl import GLdouble
 
