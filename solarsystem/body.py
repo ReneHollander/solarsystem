@@ -4,13 +4,11 @@ Created on 03.11.2015
 :author: Rene Hollander
 """
 
-import math
-
 from abc import ABCMeta, abstractmethod
 from euclid import Vector3
 from pyglet.gl import *
 from pyglet.graphics import Batch
-from util.mathhelper import toGlMatrix
+from solarsystem.renderer import BodyRenderer, OrbitingBodyRenderer
 from util.texture import Texture
 
 
@@ -19,7 +17,7 @@ class Body(object, metaclass=ABCMeta):
     An abstract class defining an body in the solarsystem
     """
 
-    def __init__(self, parent, name, color, radius, axial_tilt, sidereal_rotation_period):
+    def __init__(self, parent, name, color, radius, axial_tilt, sidereal_rotation_period, renderer=BodyRenderer()):
         """
         Creates a new body with the given parameters
 
@@ -47,6 +45,7 @@ class Body(object, metaclass=ABCMeta):
         self.timefactor = 0
         self.draw_orbit = True
         self.draw_texture = True
+        self.renderer = renderer
 
         self.texture = Texture(self.name.lower() + ".jpg")
         self.sphere = gluNewQuadric()
@@ -72,17 +71,7 @@ class Body(object, metaclass=ABCMeta):
         :type matrix: :class:`euclid.Matrix4`
         """
 
-        matrix.rotate_axis(math.radians(-90), Vector3(1, 0, 0))
-        matrix.rotate_axis(math.radians(self.axial_tilt), Vector3(0, 1, 0))
-        matrix.rotate_axis(math.radians(-360 * self.timefactor), Vector3(0, 0, 1))
-        glLoadMatrixd(toGlMatrix(matrix))
-        if self.draw_texture:
-            self.texture.draw()
-        else:
-            glColor3f(self.color["r"] / 255.0, self.color["g"] / 255.0, self.color["b"] / 255.0)
-
-        gluSphere(self.sphere, self.radius, 50, 50)
-        glDisable(GL_TEXTURE_2D)
+        self.renderer.draw(self, matrix)
 
 
 class StationaryBody(Body, metaclass=ABCMeta):
@@ -130,7 +119,7 @@ class OrbitingBody(Body, metaclass=ABCMeta):
     An orbiting body in the solarsystem
     """
 
-    def __init__(self, parent, name, color, radius, orbit, axial_tilt, sidereal_rotation_period):
+    def __init__(self, parent, name, color, radius, orbit, axial_tilt, sidereal_rotation_period, renderer=OrbitingBodyRenderer()):
         """
         Creates a new body with the given parameters
 
@@ -150,7 +139,7 @@ class OrbitingBody(Body, metaclass=ABCMeta):
         :type sidereal_rotation_period: float
         """
 
-        super().__init__(parent, name, color, radius, axial_tilt, sidereal_rotation_period)
+        super().__init__(parent, name, color, radius, axial_tilt, sidereal_rotation_period, renderer=renderer)
         self.orbit = orbit
         self.orbit_line_batch = Batch()
 
@@ -186,20 +175,4 @@ class OrbitingBody(Body, metaclass=ABCMeta):
         :type matrix: :class:`euclid.Matrix4`
         """
 
-        # draw the in the constructor plotted line if requested
-        if self.draw_orbit:
-            linematrix = matrix.__copy__()
-            linematrix.translate(0, 0, 0)
-            if self.parent is not None:
-                linematrix.translate(self.parent.xyz.x, self.parent.xyz.z, self.parent.xyz.y)
-            linematrix.rotate_axis(math.radians(-90), Vector3(1, 0, 0))
-
-            glLoadMatrixd(toGlMatrix(linematrix))
-            glLineWidth(1.25)
-            glColor3f(self.color["r"] / 255.0, self.color["g"] / 255.0, self.color["b"] / 255.0)
-            self.orbit_line_batch.draw()
-
-        glColor3f(1.0, 1.0, 1.0)
-
-        matrix.translate(self.xyz.x, self.xyz.z, self.xyz.y)
-        super().draw(matrix)
+        self.renderer.draw(self, matrix)

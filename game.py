@@ -6,6 +6,7 @@ from pyglet.gl import *
 from pyglet.text import Label
 from solarsystem.body import OrbitingBody, StationaryBody
 from solarsystem.orbit import CircularOrbit
+from solarsystem.renderer import OrbitingBodyWithRingRenderer, setup_ring_renderer
 from util import load_string
 from util.camera import Camera, halfpi
 from util.fpscounter import FPSCounter
@@ -78,7 +79,7 @@ moon = OrbitingBody(earth, "moon", {"r": 118, "g": 118, "b": 118}, 1737 / radius
 mars = OrbitingBody(sun, "mars", {"r": 114, "g": 90, "b": 66}, 3398 / radiusmod, CircularOrbit(225000000 / orbitmod, 686.971 * dts, 5.65), 25.19, 1.025957 * dts)
 ceres = OrbitingBody(sun, "ceres", {"r": 182, "g": 165, "b": 149}, 473 / radiusmod * 3, CircularOrbit(414015000 / orbitmod / 1.3, 1681.63 * dts, 9.20), 4, 0.3781 * dts)
 jupiter = OrbitingBody(sun, "jupiter", {"r": 192, "g": 161, "b": 133}, 66854 / radiusmod / 5, CircularOrbit(778547200 / orbitmod / 2, 4332.59 * dts, 6.09), 3.13, 0.4135 * dts)
-saturn = OrbitingBody(sun, "saturn", {"r": 215, "g": 191, "b": 147}, 58232 / radiusmod / 5, CircularOrbit(1433449369 / orbitmod / 2, 10759.22 * dts, 5.51), 26.73, 0.4395 * dts)
+saturn = setup_ring_renderer(60000 / radiusmod / 5, 140000 / radiusmod / 5, OrbitingBody(sun, "saturn", {"r": 215, "g": 191, "b": 147}, 58232 / radiusmod / 5, CircularOrbit(1433449369 / orbitmod / 2, 10759.22 * dts, 5.51), 26.73, 0.4395 * dts, renderer=OrbitingBodyWithRingRenderer()))
 uranus = OrbitingBody(sun, "uranus", {"r": 160, "g": 209, "b": 216}, 25362 / radiusmod / 2, CircularOrbit(2875 / 2, 30688 * dts, 6.48), 97.77, 0.71833 * dts)
 neptune = OrbitingBody(sun, "neptune", {"r": 61, "g": 108, "b": 200}, 24622 / radiusmod / 2, CircularOrbit(4498542650 / orbitmod / 2, 60190 * dts, 6.43), 28.32, 0.6713 * dts)
 pluto = OrbitingBody(sun, "pluto", {"r": 174, "g": 131, "b": 97}, 1187 / radiusmod * 3, CircularOrbit(5907 / 2, 90581 * dts, 11.88), 119.591, 6.387230 * dts)
