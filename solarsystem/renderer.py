@@ -100,10 +100,12 @@ class OrbitingBodyWithRingRenderer(OrbitingBodyRenderer):
         super().draw(body, mat)
 
 
-def setup_ring_renderer(ring_inner_radius, ring_outer_radius, body):
+def setup_ring_renderer(ring_texture_name, ring_inner_radius, ring_outer_radius, body):
     """
     Sets the needed parameters for the OrbitingBodyWithRingRenderer.
 
+    :param ring_texture_name: Name of the texture
+    :type ring_texture_name: str
     :param ring_inner_radius: Inner radius of the rings
     :type ring_inner_radius: float
     :param ring_outer_radius: Outer radius of the rings
@@ -116,7 +118,7 @@ def setup_ring_renderer(ring_inner_radius, ring_outer_radius, body):
 
     body.ring_inner_radius = ring_inner_radius
     body.ring_outer_radius = ring_outer_radius
-    body.ring_texture = Texture(body.name + "_ring" + ".png")
+    body.ring_texture = Texture(ring_texture_name)
     body.ring_disk = gluNewQuadric()
     gluQuadricNormals(body.ring_disk, GLU_SMOOTH)
     gluQuadricTexture(body.ring_disk, GL_TRUE)

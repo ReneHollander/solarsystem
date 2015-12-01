@@ -1,0 +1,19 @@
+{
+  "name": "Earth",
+  "parent": "sun",
+  "texture": "earth.jpg",
+  "basecolor": {
+    "r": 29,
+    "g": 60,
+    "b": 109
+  },
+  "radius": 6.371,
+  "orbit": {
+    "type": "circular",
+    "radius": 149.597500,
+    "orbital_period": 365.256363,
+    "inclination": 7.155
+  },
+  "axial_tilt": 23.4392811,
+  "sidereal_rotation_period": 0.99726968
+}

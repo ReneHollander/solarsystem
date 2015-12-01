@@ -1,0 +1,19 @@
+{
+  "name": "Eris",
+  "parent": "sun",
+  "texture": "eris.jpg",
+  "basecolor": {
+    "r": 162,
+    "g": 180,
+    "b": 190
+  },
+  "radius": 3.489,
+  "orbit": {
+    "type": "circular",
+    "radius": 5083.5,
+    "orbital_period": 203830,
+    "inclination": 44.0445
+  },
+  "axial_tilt": 0,
+  "sidereal_rotation_period": 1.0791
+}

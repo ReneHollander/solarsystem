@@ -1,0 +1,19 @@
+{
+  "name": "Uranus",
+  "parent": "sun",
+  "texture": "uranus.jpg",
+  "basecolor": {
+    "r": 160,
+    "g": 209,
+    "b": 216
+  },
+  "radius": 12.681,
+  "orbit": {
+    "type": "circular",
+    "radius": 1437.5,
+    "orbital_period": 30688,
+    "inclination": 6.48
+  },
+  "axial_tilt": 97.77,
+  "sidereal_rotation_period": 0.71833
+}

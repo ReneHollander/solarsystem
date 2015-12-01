@@ -1,0 +1,19 @@
+{
+  "name": "Mars",
+  "parent": "sun",
+  "texture": "mars.jpg",
+  "basecolor": {
+    "r": 114,
+    "g": 90,
+    "b": 66
+  },
+  "radius": 3.398,
+  "orbit": {
+    "type": "circular",
+    "radius": 225.000000,
+    "orbital_period": 686.971,
+    "inclination": 5.65
+  },
+  "axial_tilt": 25.19,
+  "sidereal_rotation_period": 1.025957
+}

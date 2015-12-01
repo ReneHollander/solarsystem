@@ -1,0 +1,19 @@
+{
+  "name": "Venus",
+  "parent": "sun",
+  "texture": "venus.jpg",
+  "basecolor": {
+    "r": 146,
+    "g": 71,
+    "b": 14
+  },
+  "radius": 6.051,
+  "orbit": {
+    "type": "circular",
+    "radius": 108.939000,
+    "orbital_period": 224.701,
+    "inclination": 3.86
+  },
+  "axial_tilt": 2.64,
+  "sidereal_rotation_period": -243.025
+}

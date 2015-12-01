@@ -10,6 +10,7 @@ import pyglet
 from pyglet.text import decode_html
 
 lightfv = ctypes.c_float * 4
+dts = 24 * 60 * 60
 
 
 def load_string(filename):

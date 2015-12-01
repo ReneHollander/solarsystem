@@ -1,0 +1,19 @@
+{
+  "name": "Ceres",
+  "parent": "sun",
+  "texture": "ceres.jpg",
+  "basecolor": {
+    "r": 182,
+    "g": 165,
+    "b": 149
+  },
+  "radius": 1.419,
+  "orbit": {
+    "type": "circular",
+    "radius": 318.473076923,
+    "orbital_period": 1681.63,
+    "inclination": 9.20
+  },
+  "axial_tilt": 4,
+  "sidereal_rotation_period": 0.3781
+}

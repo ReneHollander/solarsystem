@@ -1,0 +1,19 @@
+{
+  "name": "Jupiter",
+  "parent": "sun",
+  "texture": "jupiter.jpg",
+  "basecolor": {
+    "r": 192,
+    "g": 161,
+    "b": 133
+  },
+  "radius": 13.3708,
+  "orbit": {
+    "type": "circular",
+    "radius": 389.2736,
+    "orbital_period": 4332.59,
+    "inclination": 6.09
+  },
+  "axial_tilt": 3.13,
+  "sidereal_rotation_period": 0.4135
+}

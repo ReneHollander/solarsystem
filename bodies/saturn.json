@@ -1,0 +1,26 @@
+{
+  "name": "Saturn",
+  "parent": "sun",
+  "texture": "saturn.jpg",
+  "basecolor": {
+    "r": 215,
+    "g": 191,
+    "b": 147
+  },
+  "radius": 11.6464,
+  "orbit": {
+    "type": "circular",
+    "radius": 716.7246845,
+    "orbital_period": 10759.22,
+    "inclination": 5.51
+  },
+  "axial_tilt": 26.73,
+  "sidereal_rotation_period": 0.4395,
+  "ring": {
+    "texture": "saturn_ring.png",
+    "radius": {
+      "inner": 12,
+      "outer": 28
+    }
+  }
+}

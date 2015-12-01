@@ -17,7 +17,7 @@ class Body(object, metaclass=ABCMeta):
     An abstract class defining an body in the solarsystem
     """
 
-    def __init__(self, parent, name, color, radius, axial_tilt, sidereal_rotation_period, renderer=BodyRenderer()):
+    def __init__(self, parent, name, texturename, color, radius, axial_tilt, sidereal_rotation_period, renderer=BodyRenderer()):
         """
         Creates a new body with the given parameters
 
@@ -25,6 +25,8 @@ class Body(object, metaclass=ABCMeta):
         :type parent: :class:`Body`
         :param name: Name of the body
         :type name: str
+        :param texturename: Name of the texture
+        :type texturename: str
         :param color: Dictionary with r, g and b values
         :type color: dict
         :param radius: Radius of the body
@@ -38,6 +40,7 @@ class Body(object, metaclass=ABCMeta):
         self.xyz = Vector3()
         self.parent = parent
         self.name = name
+        self.texturename = texturename
         self.color = color
         self.radius = radius
         self.axial_tilt = axial_tilt
@@ -47,7 +50,7 @@ class Body(object, metaclass=ABCMeta):
         self.draw_texture = True
         self.renderer = renderer
 
-        self.texture = Texture(self.name.lower() + ".jpg")
+        self.texture = Texture(texturename)
         self.sphere = gluNewQuadric()
         gluQuadricNormals(self.sphere, GLU_SMOOTH)
         gluQuadricTexture(self.sphere, GL_TRUE)
@@ -79,7 +82,7 @@ class StationaryBody(Body, metaclass=ABCMeta):
     A stationary body in the solarsystem (Body without an orbit)
     """
 
-    def __init__(self, parent, name, color, radius, axial_tilt, sidereal_rotation_period, xyz=Vector3()):
+    def __init__(self, parent, name, texturename, color, radius, axial_tilt, sidereal_rotation_period, xyz=Vector3()):
         """
         Creates a new body with the given parameters
 
@@ -87,6 +90,8 @@ class StationaryBody(Body, metaclass=ABCMeta):
         :type parent: None, :class:`Body`
         :param name: Name of the body
         :type name: str
+        :param texturename: Name of the texture
+        :type texturename: str
         :param color: Dictionary with r, g and b values
         :type color: dict
         :param radius: Radius of the body
@@ -99,7 +104,7 @@ class StationaryBody(Body, metaclass=ABCMeta):
         :type xyz: :class:`euclid.Vector3`
         """
 
-        super().__init__(parent, name, color, radius, axial_tilt, sidereal_rotation_period)
+        super().__init__(parent, name, texturename, color, radius, axial_tilt, sidereal_rotation_period)
         self.xyz = xyz
 
     def draw(self, matrix):
@@ -119,7 +124,7 @@ class OrbitingBody(Body, metaclass=ABCMeta):
     An orbiting body in the solarsystem
     """
 
-    def __init__(self, parent, name, color, radius, orbit, axial_tilt, sidereal_rotation_period, renderer=OrbitingBodyRenderer()):
+    def __init__(self, parent, name, texturename, color, radius, orbit, axial_tilt, sidereal_rotation_period, renderer=OrbitingBodyRenderer()):
         """
         Creates a new body with the given parameters
 
@@ -127,6 +132,8 @@ class OrbitingBody(Body, metaclass=ABCMeta):
         :type parent: :class:`Body`
         :param name: Name of the body
         :type name: str
+        :param texturename: Name of the texture
+        :type texturename: str
         :param color: Dictionary with r, g and b values
         :type color: dict
         :param radius: Radius of the body
@@ -139,7 +146,7 @@ class OrbitingBody(Body, metaclass=ABCMeta):
         :type sidereal_rotation_period: float
         """
 
-        super().__init__(parent, name, color, radius, axial_tilt, sidereal_rotation_period, renderer=renderer)
+        super().__init__(parent, name, texturename, color, radius, axial_tilt, sidereal_rotation_period, renderer=renderer)
         self.orbit = orbit
         self.orbit_line_batch = Batch()
 
