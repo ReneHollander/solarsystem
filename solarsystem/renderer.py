@@ -84,18 +84,19 @@ class OrbitingBodyWithRingRenderer(OrbitingBodyRenderer):
     """
 
     def draw(self, body, mat):
-        matrix = mat.__copy__()
-        matrix.translate(body.xyz.x, body.xyz.z, body.xyz.y)
-        matrix.rotate_axis(math.radians(-90), Vector3(1, 0, 0))
-        matrix.rotate_axis(math.radians(body.axial_tilt), Vector3(0, 1, 0))
-        glLoadMatrixd(toGlMatrix(matrix))
-        glDisable(GL_DEPTH_TEST)
-        glDisable(GL_CULL_FACE)
-        body.ring_texture.draw()
-        gluDisk(body.ring_disk, body.ring_inner_radius, body.ring_outer_radius, 50, 50)
-        glEnable(GL_CULL_FACE)
-        glEnable(GL_DEPTH_TEST)
-        glDisable(GL_TEXTURE_2D)
+        if body.draw_texture:
+            matrix = mat.__copy__()
+            matrix.translate(body.xyz.x, body.xyz.z, body.xyz.y)
+            matrix.rotate_axis(math.radians(-90), Vector3(1, 0, 0))
+            matrix.rotate_axis(math.radians(body.axial_tilt), Vector3(0, 1, 0))
+            glLoadMatrixd(toGlMatrix(matrix))
+            glDisable(GL_DEPTH_TEST)
+            glDisable(GL_CULL_FACE)
+            body.ring_texture.draw()
+            gluDisk(body.ring_disk, body.ring_inner_radius, body.ring_outer_radius, 50, 50)
+            glEnable(GL_CULL_FACE)
+            glEnable(GL_DEPTH_TEST)
+            glDisable(GL_TEXTURE_2D)
 
         super().draw(body, mat)
 
