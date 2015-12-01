@@ -32,6 +32,7 @@ label_timestep = Label('', x=10, y=10, font_size=18, bold=True, color=(127, 127,
 help_label = Label(load_string('help.txt'), font_size=16, x=5, y=window.height - 5 - 12 - 2 - 16, color=(170, 170, 170, 255), width=400, multiline=True)
 hudelements = [label_fpscounter, label_timestep]
 
+fullscreen = False
 draw_skybox = True
 
 # looad the bodies from the json files
@@ -42,6 +43,7 @@ def toggle_draw_orbits():
     """
     Toggles the plotting of the orbits
     """
+
     for cur in planets:
         cur.draw_orbit = not cur.draw_orbit
 
@@ -50,15 +52,26 @@ def toggle_draw_textures():
     """
     Toggles the drawing of the textures
     """
+
     global draw_skybox
     draw_skybox = not draw_skybox
     for cur in planets:
         cur.draw_texture = not cur.draw_texture
 
 
+def toggle_fullscreen(override):
+    global fullscreen
+    if override is not None:
+        fullscreen = override
+    else:
+        fullscreen = not fullscreen
+    window.set_fullscreen(fullscreen)
+
+
 # Create a new camera
 camera = Camera(window, position=Vector3(0, -420, 0), pitch=halfpi, callbacks={'toggle_draw_orbits': toggle_draw_orbits,
-                                                                               'toggle_draw_textures': toggle_draw_textures})
+                                                                               'toggle_draw_textures': toggle_draw_textures,
+                                                                               'toggle_fullscreen': toggle_fullscreen})
 # Create model and projection matrices
 model_matrix = Matrix4()
 proj_matrix = None

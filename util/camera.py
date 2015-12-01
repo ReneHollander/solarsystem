@@ -16,6 +16,7 @@ class Camera(object):
     """
     Handles the camera
     """
+
     def __init__(self, window, position=Vector3(), yaw=0.0, pitch=0.0, callbacks=None):
         """
         Initializes the camera
@@ -104,6 +105,9 @@ class Camera(object):
         if symbol == key.ESCAPE:
             self.window.set_exclusive_mouse(False)
             self.mouse_locked = False
+            cb = self.callbacks['toggle_fullscreen']
+            if cb is not None:
+                cb(False)
             return pyglet.event.EVENT_HANDLED
         # Key code 43: Plus key
         if symbol == key.NUM_ADD or symbol == 43:
@@ -143,6 +147,10 @@ class Camera(object):
         if symbol == key.H:
             self.toggled_help_label = True
             self.draw_help_label = not self.draw_help_label
+        if symbol == key.F11:
+            cb = self.callbacks['toggle_fullscreen']
+            if cb is not None:
+                cb(None)
 
     def on_key_release(self, symbol, modifiers):
         """
