@@ -11,10 +11,9 @@ from euclid import *
 from pyglet.gl import *
 from pyglet.text import Label
 from solarsystem.loader import load_bodies
-from util import load_string
+from util import load_string, toGlMatrix
 from util.camera import Camera, halfpi
 from util.fpscounter import FPSCounter
-from util.mathhelper import toGlMatrix
 from util.skybox import SkySphere
 
 # Register resource locations in pyglet resource loader

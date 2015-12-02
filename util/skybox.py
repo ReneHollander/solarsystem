@@ -5,9 +5,11 @@ Created on 29.11.2015
 """
 
 from pyglet.gl import *
+from util import auto_str
 from util.texture import Texture
 
 
+@auto_str
 class SkySphere():
     """
     A SkyBox that maps the texture to a sphere

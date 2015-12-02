@@ -4,14 +4,14 @@ Created on 03.11.2015
 :author: Rene Hollander, Paul Kalauner
 
 """
-from math import sin, cos, pi
+from math import sin, cos
 
 from euclid import *
 from pyglet.window import key, mouse, pyglet
+from util import auto_str, halfpi
 
-halfpi = pi / 2.0
 
-
+@auto_str
 class Camera(object):
     """
     Handles the camera

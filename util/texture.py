@@ -5,8 +5,10 @@ Created on 20.11.2015
 """
 
 from pyglet.gl import *
+from util import auto_str
 
 
+@auto_str
 class Texture(object):
     """
     A wrapper for the pyglet Image for easier use

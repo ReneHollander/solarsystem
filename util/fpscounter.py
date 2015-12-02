@@ -7,7 +7,10 @@ Created on 22.11.2015
 from math import floor
 from time import time
 
+from util import auto_str
 
+
+@auto_str
 class FPSCounter(object):
     """
     Class for the FPSCounter in the upper left corner

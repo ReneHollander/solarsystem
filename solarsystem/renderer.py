@@ -9,10 +9,11 @@ import math
 from abc import ABCMeta, abstractmethod
 from euclid import Vector3
 from pyglet.gl import *
-from util.mathhelper import toGlMatrix
+from util import auto_str, toGlMatrix
 from util.texture import Texture
 
 
+@auto_str
 class Renderer(metaclass=ABCMeta):
     """
     An abstract class that gets inherited from all Renderer

@@ -9,9 +9,11 @@ from euclid import Vector3
 from pyglet.gl import *
 from pyglet.graphics import Batch
 from solarsystem.renderer import BodyRenderer, OrbitingBodyRenderer
+from util import auto_str
 from util.texture import Texture
 
 
+@auto_str
 class Body(object, metaclass=ABCMeta):
     """
     An abstract class defining an body in the solarsystem
