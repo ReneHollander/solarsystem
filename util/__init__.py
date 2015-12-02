@@ -5,6 +5,7 @@ Created on 05.11.2015
 
 """
 import ctypes
+import time as time_
 
 import pyglet
 from pyglet.text import decode_html
@@ -42,3 +43,7 @@ def auto_str(cls):
 
     cls.__str__ = __str__
     return cls
+
+
+def millis():
+    return int(round(time_.time() * 1000))

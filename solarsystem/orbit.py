@@ -4,7 +4,7 @@ Created on 03.11.2015
 :author: Rene Hollander
 """
 
-from math import sin, cos, radians, sqrt, pi, e
+from math import sin, cos, radians, sqrt, pi
 
 from abc import ABCMeta, abstractmethod
 from euclid import Vector3
@@ -101,6 +101,9 @@ class CircularOrbit(Orbit):
         return "CircualOrbit(radius=" + str(self.radius) + ")"
 
 
+mass_sun = 1.9884 * 10 ** 30
+
+
 # orbit = EllipticOrbit(-1.4301960881, -11.26064, 114.20783, 149598023 / orbitmod / 10, 7.155, 365.256363 * dts)
 # http://www.jgiesen.de/kepler/kepler.html
 @auto_str
@@ -109,33 +112,29 @@ class EllipticOrbit(Orbit):
         self.apoapsis_radius = apoapsis_radius
         self.periapsis_radius = periapsis_radius
         self.mass = mass
-        self.longtitude_ascending_node = longtitude_ascending_node
-        self.argument_of_periapsis = argument_of_periapsis
-        self.inclination = inclination
+        self.longtitude_ascending_node = radians(longtitude_ascending_node)
+        self.argument_of_periapsis = radians(argument_of_periapsis)
+        self.inclination = radians(inclination)
 
-        self.semi_major_axis = (self.apoapsis_radius + self.periapsis_radius) / 2
+        self.semi_major_axis = (self.apoapsis_radius + self.periapsis_radius) / 2.0
         self.eccentricity = (self.apoapsis_radius - self.periapsis_radius) / (self.apoapsis_radius + self.periapsis_radius)
-        self.standard_gravitational_parameter = (gravitational_constant * self.mass)
-        self.mean_motion = sqrt(self.standard_gravitational_parameter / (self.semi_major_axis ** 3))
-        self.orbital_period = 2 * pi * sqrt((self.semi_major_axis ** 3) / self.standard_gravitational_parameter)
+        self.mu = gravitational_constant * (self.mass + mass_sun)
+        self.orbital_period = 2.0 * pi * sqrt((self.semi_major_axis ** 3.0) / self.mu)
+        self.mean_motion = 2.0 * pi / self.orbital_period
 
     def calculate(self, time):
-        mean_anomaly = self.mean_motion * time
-        eccentric_anonaly = eccentric_anomaly_from_mean(self.eccentricity, mean_anomaly)
-        true_anomaly = true_anomaly_from_eccentric(self.eccentricity, eccentric_anonaly)
-        radius = self.semi_major_axis * (1 - e ^ 2) / (1 + e * cos(true_anomaly))
-        x = radius * (cos(self.longtitude_ascending_node) * cos(true_anomaly + self.periapsis_radius) - sin(self.longtitude_ascending_node) * sin(true_anomaly + self.periapsis_radius) * cos(self.inclination))
-        y = radius * (sin(self.longtitude_ascending_node) * cos(true_anomaly + self.periapsis_radius) + cos(self.longtitude_ascending_node) * sin(true_anomaly + self.periapsis_radius) * cos(self.inclination))
-        z = radius * sin(true_anomaly + self.periapsis_radius) * sin(self.inclination)
-
-        return Vector3(x, y, z)
+        true_anomaly = true_anomaly_from_eccentric(self.eccentricity, eccentric_anomaly_from_mean(self.eccentricity, self.mean_motion * time))
+        return self.calculate_by_angle(true_anomaly)
 
     def calculate_by_angle(self, rot):
-        pass
+        radius = self.semi_major_axis * (1.0 - self.eccentricity ** 2.0) / (1.0 + self.eccentricity * cos(rot))
+        x = radius * (cos(self.longtitude_ascending_node) * cos(rot + self.periapsis_radius) - sin(self.longtitude_ascending_node) * sin(rot + self.periapsis_radius) * cos(self.inclination))
+        y = radius * (sin(self.longtitude_ascending_node) * cos(rot + self.periapsis_radius) + cos(self.longtitude_ascending_node) * sin(rot + self.periapsis_radius) * cos(self.inclination))
+        z = radius * sin(rot + self.periapsis_radius) * sin(self.inclination)
+        return Vector3(x, y, z)
 
 
-orbit = EllipticOrbit(152100000, 147095000, 5.97237 * 10 ** 24, -11.26064, 114.20783, 0.00005)
-print(orbit.standard_gravitational_parameter)
-print(orbit.mean_motion)
-print(orbit.orbital_period)
+orbit = EllipticOrbit(152100000000, 147095000000, 5.97237 * 10 ** 24, -11.26064, 114.20783, 0.00005)
 print(orbit)
+pos = orbit.calculate(180 * 60 * 60 * 24)
+print("x: " + str(pos.x / 1000) + ", y:" + str(pos.y / 1000) + ", z: " + str(pos.z / 1000))
