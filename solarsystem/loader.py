@@ -39,6 +39,7 @@ def load_bodies(directory):
             del body.parent_internal_name
 
     for body in bodies.values():
+        print("Executing post_init for " + body.name)
         body.post_init()
 
     return bodies.values()

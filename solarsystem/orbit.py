@@ -56,7 +56,6 @@ class Orbit(object, metaclass=ABCMeta):
 
         pass
 
-    @abstractmethod
     def plot(self, steps):
         """
         Generator to calculate the position in orbit
@@ -65,10 +64,9 @@ class Orbit(object, metaclass=ABCMeta):
         :return: int
         """
 
-        pass
-
-    def __str__(self):
-        return "Orbit()"
+        step = self.orbital_period / steps
+        for i in range(0, steps):
+            yield self.calculate(i * step)
 
 
 class CircularOrbit(Orbit):
@@ -110,12 +108,6 @@ class CircularOrbit(Orbit):
         if self.inclination != 0:
             pos = pos.rotate_around(Vector3(0, 1, 0), self.inclination)
         return pos
-
-    def plot(self, steps):
-        step = self.orbital_period / steps
-        for i in range(0, steps):
-            pos = self.calculate(i * step)
-            yield pos
 
 
 class EllipticOrbit(Orbit):
@@ -196,10 +188,3 @@ class EllipticOrbit(Orbit):
         pos = Vector3(x, y, z)
         pos *= self.multiplier
         return pos
-
-    def plot(self, steps):
-        step = self.orbital_period / steps
-        for i in range(0, steps):
-            pos = self.calculate(i * step)
-            pos = pos.rotate_around(Vector3(1, 0, 0), radians(180))
-            yield pos

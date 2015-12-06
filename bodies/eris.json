@@ -9,10 +9,14 @@
   },
   "radius": 3.489,
   "orbit": {
-    "type": "circular",
-    "radius": 5083.5,
-    "orbital_period": 203830,
-    "inclination": 0.768721542
+    "type": "elliptic",
+    "apoapsis": 1.460838e+16,
+    "periapsis": 5.658539e+15,
+    "longtitude_ascending_node": 0.627499971,
+    "argument_of_periapsis": 2.635045745,
+    "inclination": 0.768721542,
+    "initial_mean_anomaly": 3.563264201,
+    "multiplier": 5.013368e-13
   },
   "axial_tilt": 0,
   "sidereal_rotation_period": 1.0791,
