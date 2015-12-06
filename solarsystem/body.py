@@ -4,13 +4,15 @@ Created on 03.11.2015
 :author: Rene Hollander
 """
 
-from abc import ABCMeta, abstractmethod
+from abc import ABCMeta
 from euclid import Vector3
 from pyglet.gl import *
 from pyglet.graphics import Batch
 from solarsystem.renderer import BodyRenderer, OrbitingBodyRenderer
 from util import auto_str
 from util.texture import Texture
+
+plot_steps = 512
 
 
 @auto_str
@@ -19,7 +21,7 @@ class Body(object, metaclass=ABCMeta):
     An abstract class defining an body in the solarsystem
     """
 
-    def __init__(self, parent, name, texturename, color, radius, axial_tilt, sidereal_rotation_period, renderer=BodyRenderer()):
+    def __init__(self, parent, name, texturename, color, radius, axial_tilt, sidereal_rotation_period, mass, renderer=BodyRenderer()):
         """
         Creates a new body with the given parameters
 
@@ -35,8 +37,10 @@ class Body(object, metaclass=ABCMeta):
         :type radius: float
         :param axial_tilt: Axial Tilt in degrees
         :type axial_tilt: float
-        :param sidereal_rotation_period: Rotation period (siderial) around its own axis
+        :param sidereal_rotation_period: Rotation period (siderial) around its own axis in days
         :type sidereal_rotation_period: float
+        :param mass: Mass of the body in kilograms
+        :type mass: float
         """
 
         self.xyz = Vector3()
@@ -47,15 +51,24 @@ class Body(object, metaclass=ABCMeta):
         self.radius = radius
         self.axial_tilt = axial_tilt
         self.sidereal_rotation_period = sidereal_rotation_period
+        self.mass = mass
+        self.renderer = renderer
+
         self.timefactor = 0
         self.draw_orbit = True
         self.draw_texture = True
-        self.renderer = renderer
 
         self.texture = Texture(texturename)
         self.sphere = gluNewQuadric()
         gluQuadricNormals(self.sphere, GLU_SMOOTH)
         gluQuadricTexture(self.sphere, GL_TRUE)
+
+    def post_init(self):
+        """
+        Calculations and stuff that should happen after everything is setup correctly
+        """
+
+        pass
 
     def update(self, time):
         """
@@ -67,7 +80,6 @@ class Body(object, metaclass=ABCMeta):
 
         self.timefactor = (time % self.sidereal_rotation_period) / self.sidereal_rotation_period
 
-    @abstractmethod
     def draw(self, matrix):
         """
         Draw the body
@@ -84,7 +96,7 @@ class StationaryBody(Body, metaclass=ABCMeta):
     A stationary body in the solarsystem (Body without an orbit)
     """
 
-    def __init__(self, parent, name, texturename, color, radius, axial_tilt, sidereal_rotation_period, xyz=Vector3()):
+    def __init__(self, parent, name, texturename, color, radius, axial_tilt, sidereal_rotation_period, mass, xyz=Vector3()):
         """
         Creates a new body with the given parameters
 
@@ -106,7 +118,7 @@ class StationaryBody(Body, metaclass=ABCMeta):
         :type xyz: :class:`euclid.Vector3`
         """
 
-        super().__init__(parent, name, texturename, color, radius, axial_tilt, sidereal_rotation_period)
+        super().__init__(parent, name, texturename, color, radius, axial_tilt, sidereal_rotation_period, mass)
         self.xyz = xyz
 
     def draw(self, matrix):
@@ -126,12 +138,12 @@ class OrbitingBody(Body, metaclass=ABCMeta):
     An orbiting body in the solarsystem
     """
 
-    def __init__(self, parent, name, texturename, color, radius, orbit, axial_tilt, sidereal_rotation_period, renderer=OrbitingBodyRenderer()):
+    def __init__(self, parent, name, texturename, color, radius, orbit, axial_tilt, sidereal_rotation_period, mass, renderer=OrbitingBodyRenderer()):
         """
         Creates a new body with the given parameters
 
         :param parent: Parent body in the system
-        :type parent: :class:`Body`
+        :type parent: :class:`Body`, None
         :param name: Name of the body
         :type name: str
         :param texturename: Name of the texture
@@ -148,18 +160,21 @@ class OrbitingBody(Body, metaclass=ABCMeta):
         :type sidereal_rotation_period: float
         """
 
-        super().__init__(parent, name, texturename, color, radius, axial_tilt, sidereal_rotation_period, renderer=renderer)
+        super().__init__(parent, name, texturename, color, radius, axial_tilt, sidereal_rotation_period, mass, renderer=renderer)
         self.orbit = orbit
+        self.orbit.body = self
         self.orbit_line_batch = Batch()
+
+    def post_init(self):
+        self.orbit.post_init()
 
         # Plot the orbit to a pyglet batch for faster drawing
         orbit_line = []
-        for angle in range(0, 360):
-            pos = self.orbit.calculate_by_angle(angle)
+        for pos in self.orbit.plot(plot_steps):
             orbit_line.append(pos.x)
             orbit_line.append(pos.y)
             orbit_line.append(pos.z)
-        self.orbit_line_batch.add(int(len(orbit_line) / 3), GL_LINES, None, ('v3f', tuple(orbit_line)))
+        self.orbit_line_batch.add(int(len(orbit_line) / 3), GL_LINE_LOOP, None, ('v3f', tuple(orbit_line)))
 
     def update(self, time):
         """
@@ -170,18 +185,6 @@ class OrbitingBody(Body, metaclass=ABCMeta):
         """
 
         super().update(time)
-        if self.parent is not None:
-            # if this body has an parent, offset the position of this body by the orbit of the parent
-            self.xyz = self.parent.xyz + self.orbit.calculate(time)
-        else:
-            self.xyz = self.orbit.calculate(time)
-
-    def draw(self, matrix):
-        """
-        Draw the body
-
-        :param matrix: Current Model-View-Projection matrix
-        :type matrix: :class:`euclid.Matrix4`
-        """
-
-        self.renderer.draw(self, matrix)
+        self.xyz = self.orbit.calculate(time)
+        if self.parent:
+            self.xyz += self.parent.xyz

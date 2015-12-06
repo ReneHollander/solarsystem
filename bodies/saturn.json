@@ -12,10 +12,11 @@
     "type": "circular",
     "radius": 716.7246845,
     "orbital_period": 10759.22,
-    "inclination": 5.51
+    "inclination": 0.0961676418
   },
-  "axial_tilt": 26.73,
+  "axial_tilt": 0.466526509,
   "sidereal_rotation_period": 0.4395,
+  "mass": 5.685e+29,
   "ring": {
     "texture": "saturn_ring.png",
     "radius": {

@@ -4,19 +4,44 @@ Created on 03.11.2015
 :author: Rene Hollander
 """
 
-from math import sin, cos, radians, sqrt, pi, fmod
+from math import sin, cos, radians, sqrt, pi
 
 from abc import ABCMeta, abstractmethod
 from euclid import Vector3
 from util import auto_str
-from util.orbitalcalculations import gravitational_constant, eccentric_anomaly_from_mean, true_anomaly_from_eccentric
+from util.orbitalcalculations import gravitational_constant, true_anomaly_from_eccentric, eccentric_anomaly_from_mean
 
 
 @auto_str
 class Orbit(object, metaclass=ABCMeta):
     """
     An abstract class defining the orbit of a body
+
+    :var body: Body that this orbit belongs to
+    :type body: :class:`solarsystem.body.Body`
+    :var multiplier: Position multiplier
+    :type multiplier: float
     """
+
+    def __init__(self, body=None, multiplier=1):
+        """
+        Creates a new Orbit
+
+        :param body: Body that this orbit belongs to
+        :type body: :class:`solarsystem.body.Body`
+        :param multiplier: Position multiplier
+        :type multiplier: float
+        """
+
+        self.body = body
+        self.multiplier = multiplier
+
+    def post_init(self):
+        """
+        Calculations and stuff that should happen after everything is setup correctly
+        """
+
+        pass
 
     @abstractmethod
     def calculate(self, time):
@@ -31,14 +56,13 @@ class Orbit(object, metaclass=ABCMeta):
 
         pass
 
-    def calculate_by_angle(self, angle):
+    @abstractmethod
+    def plot(self, steps):
         """
-        Calculate current position of body with current angle in orbit and return it
+        Generator to calculate the position in orbit
 
-        :param angle: current angle in orbit in radians
-        :type angle: float
-        :return: position
-        :rtype: Vector3
+        :param steps: Steps to calculate
+        :return: int
         """
 
         pass
@@ -50,29 +74,36 @@ class Orbit(object, metaclass=ABCMeta):
 class CircularOrbit(Orbit):
     """
     An Orbit subclass defining a circular orbit
+
+    :var radius: Radius of the orbit
+    :type radius: float
+    :var orbital_period: Time to complete one orbit in seconds
+    :type orbital_period: float
+    :var inclination: Inlincation to ecliptic in radians
+    :type inclination: float
+    :param multiplier: Position multiplier
+    :type multiplier: float
     """
 
-    def __init__(self, radius, orbital_period, inclination=0):
+    def __init__(self, radius, orbital_period, inclination=0, multiplier=1):
         """
         Creates a circular orbit with the given radius, orbital_period (siderial) and inclination
 
         :param radius: Radois of the orbit
         :type radius: float
-        :param orbital_period: Duration of one orbit in seconds
+        :param orbital_period: Duration of one orbit in days
         :type orbital_period: float
         :param inclination: Inclination of orbit in radians
         :type: inclination: float
         """
 
+        super().__init__(multiplier=multiplier)
         self.radius = radius
         self.orbital_period = orbital_period
         self.inclination = inclination
 
     def calculate(self, time):
-        return self.calculate_by_angle(radians(360 * ((time % self.orbital_period) / self.orbital_period)))
-
-    def calculate_by_angle(self, angle):
-        angle = fmod(angle, 2.0 * pi)
+        angle = radians(360 * ((time % self.orbital_period) / self.orbital_period))
         x = self.radius * cos(angle)
         y = self.radius * sin(angle)
         pos = Vector3(x, y, 0)
@@ -80,8 +111,11 @@ class CircularOrbit(Orbit):
             pos = pos.rotate_around(Vector3(0, 1, 0), self.inclination)
         return pos
 
-
-mass_sun = 1.9884 * 10 ** 30
+    def plot(self, steps):
+        step = self.orbital_period / steps
+        for i in range(0, steps):
+            pos = self.calculate(i * step)
+            yield pos
 
 
 class EllipticOrbit(Orbit):
@@ -94,6 +128,18 @@ class EllipticOrbit(Orbit):
     https://downloads.rene-schwarz.com/download/M001-Keplerian_Orbit_Elements_to_Cartesian_State_Vectors.pdf
     https://www.physicsforums.com/threads/calculating-elliptic-orbits-in-cartesian-coordinates.712979/
 
+    :var apoapsis: Apoapsis in meters
+    :type apoapsis: float
+    :var periapsis: Periapsis in meters
+    :type periapsis: float
+    :var longtitude_ascending_node: Longtitude of the ascending node in radians
+    :type longtitude_ascending_node: float
+    :var argument_of_periapsis: Argument of the periapsis in radians
+    :type argument_of_periapsis: float
+    :var initial_mean_anomaly: Initial mean anomaly at J.2000 in radians
+    :type initial_mean_anomaly: float
+    :var inclination: Inclination of the orbit in radians
+    :type inclination: float
     :var semi_major_axis: Semi-mahor axis calculated from the provided apoapsis and periapsis
     :type semi_major_axis: float
     :var eccentricity: Eccentricity calculated from the provided apoapsis and periapsis
@@ -102,9 +148,11 @@ class EllipticOrbit(Orbit):
     :type orbital_period: float
     :var mean_motion: Mean motion in radians per second
     :type mean_motion: float
+    :param multiplier: Position multiplier
+    :type multiplier: float
     """
 
-    def __init__(self, apoapsis, periapsis, mass, longtitude_ascending_node, argument_of_periapsis, inclination):
+    def __init__(self, apoapsis, periapsis, longtitude_ascending_node, argument_of_periapsis, inclination, initial_mean_anomaly=0, multiplier=1):
         """
         Creates a new elliptical orbit from the given parameters
 
@@ -112,49 +160,46 @@ class EllipticOrbit(Orbit):
         :type apoapsis: float
         :param periapsis: Periapsis in meters
         :type periapsis: float
-        :param mass: Mass of the body in kilograms
-        :type mass: float
         :param longtitude_ascending_node: Longtitude of the ascending node in radians
         :type longtitude_ascending_node: float
         :param argument_of_periapsis: Argument of the periapsis in radians
         :type argument_of_periapsis: float
+        :param initial_mean_anomaly: Initial mean anomaly at J.2000 in radians
+        :type initial_mean_anomaly: float
         :param inclination: Inclination of the orbit in radians
         :type inclination: float
         """
+        super().__init__(multiplier=multiplier)
 
         self.apoapsis = apoapsis
         self.periapsis = periapsis
-        self.mass = mass
         self.longtitude_ascending_node = longtitude_ascending_node
         self.argument_of_periapsis = argument_of_periapsis
+        self.initial_mean_anomaly = initial_mean_anomaly
         self.inclination = inclination
 
+    def post_init(self):
         self.semi_major_axis = (self.apoapsis + self.periapsis) / 2.0
         self.eccentricity = (self.apoapsis - self.periapsis) / (self.apoapsis + self.periapsis)
-        self.orbital_period = 2.0 * pi * sqrt((self.semi_major_axis ** 3.0) / gravitational_constant * (self.mass + mass_sun))
+        self.orbital_period = 2.0 * pi * sqrt((self.semi_major_axis ** 3.0) / (gravitational_constant * (5.97237 * 10 ** 24 + 1.9884 * 10 ** 30)))
         self.mean_motion = 2.0 * pi / self.orbital_period
 
     def calculate(self, time):
-        true_anomaly = true_anomaly_from_eccentric(self.eccentricity, eccentric_anomaly_from_mean(self.eccentricity, self.mean_motion * time))
-        return self.calculate_by_angle(true_anomaly)
+        mean_anomaly = self.initial_mean_anomaly
+        mean_anomaly += self.mean_motion * time
+        true_anomaly = true_anomaly_from_eccentric(self.eccentricity, eccentric_anomaly_from_mean(self.eccentricity, mean_anomaly))
+        true_anomaly = abs(true_anomaly)
+        radius = self.semi_major_axis * (1.0 - self.eccentricity ** 2.0) / (1.0 + self.eccentricity * cos(true_anomaly))
+        x = radius * (cos(self.longtitude_ascending_node) * cos(true_anomaly + self.argument_of_periapsis) - sin(self.longtitude_ascending_node) * sin(true_anomaly + self.argument_of_periapsis) * cos(self.inclination))
+        y = radius * (sin(self.longtitude_ascending_node) * cos(true_anomaly + self.argument_of_periapsis) + cos(self.longtitude_ascending_node) * sin(true_anomaly + self.argument_of_periapsis) * cos(self.inclination))
+        z = radius * sin(true_anomaly + self.argument_of_periapsis) * sin(self.inclination)
+        pos = Vector3(x, y, z)
+        pos *= self.multiplier
+        return pos
 
-    def calculate_by_angle(self, angle):
-        angle = fmod(angle, 2.0 * pi)
-        radius = self.semi_major_axis * (1.0 - self.eccentricity ** 2.0) / (1.0 + self.eccentricity * cos(angle))
-        x = radius * (cos(self.longtitude_ascending_node) * cos(angle + self.periapsis) - sin(self.longtitude_ascending_node) * sin(angle + self.periapsis) * cos(self.inclination))
-        y = radius * (sin(self.longtitude_ascending_node) * cos(angle + self.periapsis) + cos(self.longtitude_ascending_node) * sin(angle + self.periapsis) * cos(self.inclination))
-        z = radius * sin(angle + self.periapsis) * sin(self.inclination)
-        return Vector3(x, y, z)
-
-
-orbit = EllipticOrbit(152100000000, 147095000000, 5.97237 * 10 ** 24, radians(-11.26064), radians(114.20783), radians(0.00005))
-print(orbit)
-print("orbital period: " + str(orbit.orbital_period / 60 / 60 / 24))
-for day in range(0, 360):
-    pos = orbit.calculate_by_angle(radians(day))
-    print("x: " + str(pos.x / 1000000000) + ", y:" + str(pos.y / 1000000000) + ", z: " + str(pos.z / 1000000000))
-
-    # TODO convert angles in json files to radians
-    # TODO add parent body to orbit
-    # TODO add support for elliptical orbits to the json loader
-    # TODO convert all orbits to use the new elliptical calculations
+    def plot(self, steps):
+        step = self.orbital_period / steps
+        for i in range(0, steps):
+            pos = self.calculate(i * step)
+            pos = pos.rotate_around(Vector3(1, 0, 0), radians(180))
+            yield pos

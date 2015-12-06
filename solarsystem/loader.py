@@ -10,7 +10,7 @@ import json
 import os
 from os.path import basename, splitext
 from solarsystem.body import OrbitingBody, StationaryBody
-from solarsystem.orbit import CircularOrbit
+from solarsystem.orbit import CircularOrbit, EllipticOrbit
 from solarsystem.renderer import OrbitingBodyWithRingRenderer, setup_ring_renderer
 from util import dts
 
@@ -28,6 +28,7 @@ def load_bodies(directory):
     files = glob.glob(os.path.join(directory, "*.json"))
     bodies = {}
     for file in files:
+        print("Loading body " + file)
         with open(file) as data_file:
             internal_name = splitext(basename(file))[0]
             bodies[internal_name] = load_body(json.load(data_file))
@@ -36,6 +37,9 @@ def load_bodies(directory):
         if body.parent_internal_name is not None:
             body.parent = bodies[body.parent_internal_name]
             del body.parent_internal_name
+
+    for body in bodies.values():
+        body.post_init()
 
     return bodies.values()
 
@@ -58,6 +62,7 @@ def load_body(data):
     radius = data["radius"]
     axial_tilt = data["axial_tilt"]
     sidereal_rotation_period = data["sidereal_rotation_period"] * dts
+    mass = data["mass"]
     has_orbit = False
     orbit = None
     has_ring = False
@@ -78,12 +83,12 @@ def load_body(data):
     body = None
 
     if has_orbit:
+        body = OrbitingBody(None, name, texture, basecolor, radius, orbit, axial_tilt, sidereal_rotation_period, mass)
         if has_ring:
-            body = setup_ring_renderer(ring_texture, ring_inner_radius, ring_outer_radius, OrbitingBody(None, name, texture, basecolor, radius, orbit, axial_tilt, sidereal_rotation_period, renderer=OrbitingBodyWithRingRenderer()))
-        else:
-            body = OrbitingBody(None, name, texture, basecolor, radius, orbit, axial_tilt, sidereal_rotation_period)
+            body.renderer = OrbitingBodyWithRingRenderer()
+            body = setup_ring_renderer(ring_texture, ring_inner_radius, ring_outer_radius, body)
     else:
-        body = StationaryBody(None, name, texture, basecolor, radius, axial_tilt, sidereal_rotation_period)
+        body = StationaryBody(None, name, texture, basecolor, radius, axial_tilt, sidereal_rotation_period, mass)
 
     body.parent_internal_name = parent
     return body
@@ -104,5 +109,14 @@ def load_orbit(data):
         orbital_period = data["orbital_period"] * dts
         inclination = data["inclination"]
         return CircularOrbit(radius, orbital_period, inclination)
+    elif type == "elliptic":
+        apoapsis = data["apoapsis"]
+        periapsis = data["periapsis"]
+        longtitude_ascending_node = data["longtitude_ascending_node"]
+        argument_of_periapsis = data["argument_of_periapsis"]
+        inclination = data["inclination"]
+        initial_mean_anomaly = data["initial_mean_anomaly"]
+        multiplier = data["multiplier"]
+        return EllipticOrbit(apoapsis, periapsis, longtitude_ascending_node, argument_of_periapsis, inclination, initial_mean_anomaly=initial_mean_anomaly, multiplier=multiplier)
     else:
         raise TypeError("type " + type + " is invalid")

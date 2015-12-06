@@ -23,6 +23,7 @@ class Texture(object):
         :param mipmaps: Enable Mipmaps (default False)
         :type mipmaps: bool
         """
+        print("Loading Texture " + filename)
 
         self.mipmaps = mipmaps
         self.filename = filename

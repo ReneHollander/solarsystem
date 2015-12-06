@@ -4,10 +4,11 @@ Created on 02.12.2015
 :author: Rene Hollander
 """
 
-from math import fmod, cos, sin, pi, atan2, sqrt
+from math import cos, sin, pi, atan2, sqrt, fabs
 
-MAX_ITERATIONS = 100
+MAX_ITERATIONS = 1000000
 
+tau = 2 * pi
 gravitational_constant = 6.67408 * 10 ** -11
 
 
@@ -15,40 +16,48 @@ class ConvergenceError(Exception):
     pass
 
 
-def eccentric_anomaly_from_mean(e, M, tolerance=1e-14):
+def eccentric_anomaly_from_mean(eccentricity, mean_anomaly, precision=50, max_iterations=50):
     """
     Convert mean anomaly to eccentric anomaly.
-    Implemented from [A Practical Method for Solving the Kepler Equation][1]
-    by Marc A. Murison from the U.S. Naval Observatory
-    [1]: http://murison.alpheratz.net/dynamics/twobody/KeplerIterations_summary.pdf
+    Source: https://github.com/skyfielders/python-skyfield/blob/master/skyfield/keplerianlib.py
 
-    :param tolerance: Tolerance for calculation
-    :type tolerance: float
-    :param M: Mean anomaly in radians
-    :type M: float
     :param e: Eccentricity
     :type e: float
+    :param M: Mean anomaly in radians
+    :type M: float
+    :param precision: Precision of the calculation
+    :type precision: int
+    :param max_iterations: Max iterations
+    :type max_iterations: int
     """
 
-    Mnorm = fmod(M, 2.0 * pi)
-    E0 = M + (-1 / 2.0 * e ** 3.0 + e + (e ** 2.0 + 3.0 / 2.0 * cos(M) * e ** 3.0) * cos(M)) * sin(M)
-    dE = tolerance + 1
-    E = 0
+    # calculate the delta
+    delta = 10 ** -precision
+
+    # normalize the mean anomaly
+    m = mean_anomaly % tau
+
+    # set up the first guess
+    eccentric_anomaly = tau
+    if eccentricity < 0.8:
+        eccentric_anomaly = m
+
+    # do the initial test
+    test = eccentric_anomaly - eccentricity * sin(m) - m
+
     count = 0
-    while dE > tolerance:
-        t1 = cos(E0)
-        t2 = -1 + e * t1
-        t3 = sin(E0)
-        t4 = e * t3
-        t5 = -E0 + t4 + Mnorm
-        t6 = t5 / (1.0 / 2.0 * t5 * t4 / t2 + t2)
-        E = E0 - t5 / ((1.0 / 2.0 * t3 - 1.0 / 6.0 * t1 * t6) * e * t6 + t2)
-        dE = abs(E - E0)
-        E0 = E
-        count += 1.0
-        if count == MAX_ITERATIONS:
-            raise ConvergenceError('Did not converge after {n} iterations. (e={e!r}, M={M!r})'.format(n=MAX_ITERATIONS, e=e, M=M))
-    return E
+    while (fabs(test) > delta) and (count < max_iterations):
+        # calculate the next guess for an eccentric anomaly
+        eccentric_anomaly = (eccentric_anomaly - test / (1.0 - eccentricity * cos(eccentric_anomaly)))
+
+        # try it
+        test = eccentric_anomaly - eccentricity * sin(eccentric_anomaly) - m
+
+        # count the runs, so we don't go forever
+        count += 1
+
+    # convert to degrees
+    return eccentric_anomaly
 
 
 def true_anomaly_from_eccentric(e, E):

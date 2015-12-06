@@ -12,8 +12,9 @@
     "type": "circular",
     "radius": 1437.5,
     "orbital_period": 30688,
-    "inclination": 6.48
+    "inclination": 0.113097336
   },
-  "axial_tilt": 97.77,
-  "sidereal_rotation_period": 0.71833
+  "axial_tilt": 1.70640841,
+  "sidereal_rotation_period": 0.71833,
+  "mass": 8.683e+28
 }

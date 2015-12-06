@@ -1,0 +1,24 @@
+{
+  "name": "Name",
+  "parent": "parent internal name",
+  "texture": "texture.jpg",
+  "basecolor": {
+    "r": "red 0-255",
+    "g": "green 0-255",
+    "b": "blue 0-255"
+  },
+  "radius": "Radius meters",
+  "multiplier": "radius multiplier",
+  "orbit": {
+    "type": "elliptic",
+    "apoapsis": "Apoapsis in meters",
+    "periapsis": "Periapsis in meters",
+    "longtitude_ascending_node": "Longtitude of the ascending node in radians at J.2000",
+    "argument_of_periapsis": "Argument of the periapsos in radians at J.2000",
+    "inclination": "Inclination in radians to ecliptic",
+    "multiplier": "Position multiplier"
+  },
+  "axial_tilt": "Axial tilt in radians",
+  "sidereal_rotation_period": "Siderial rotation period in days",
+  "mass": "Mass in kilograms"
+}

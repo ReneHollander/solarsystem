@@ -62,7 +62,6 @@ class OrbitingBodyRenderer(BodyRenderer):
         # draw the in the constructor plotted line if requested
         if body.draw_orbit:
             linematrix = matrix.__copy__()
-            linematrix.translate(0, 0, 0)
             if body.parent is not None:
                 linematrix.translate(body.parent.xyz.x, body.parent.xyz.z, body.parent.xyz.y)
             linematrix.rotate_axis(math.radians(-90), Vector3(1, 0, 0))
