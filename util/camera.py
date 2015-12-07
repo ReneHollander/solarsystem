@@ -59,8 +59,8 @@ class Camera(object):
         dx = self.get_dx()
         dy = self.get_dy()
 
-        self.yaw += dx * mousesensitivity
-        self.pitch -= dy * mousesensitivity
+        self.yaw -= dx * mousesensitivity
+        self.pitch += dy * mousesensitivity
 
         if self.pitch > halfpi:
             self.pitch = halfpi
@@ -73,25 +73,25 @@ class Camera(object):
                 movementspeed *= 10
             if self.keys[key.W]:
                 self.position.x -= movementspeed * sin(self.yaw)
-                self.position.z += movementspeed * cos(self.yaw)
+                self.position.z -= movementspeed * cos(self.yaw)
             if self.keys[key.S]:
                 self.position.x += movementspeed * sin(self.yaw)
-                self.position.z -= movementspeed * cos(self.yaw)
+                self.position.z += movementspeed * cos(self.yaw)
             if self.keys[key.A]:
-                self.position.x -= movementspeed * sin(self.yaw - 90)
+                self.position.x += movementspeed * sin(self.yaw - 90)
                 self.position.z += movementspeed * cos(self.yaw - 90)
             if self.keys[key.D]:
-                self.position.x -= movementspeed * sin(self.yaw + 90)
+                self.position.x += movementspeed * sin(self.yaw + 90)
                 self.position.z += movementspeed * cos(self.yaw + 90)
             if self.keys[key.SPACE]:
-                self.position.y -= movementspeed
-            if self.keys[key.LCTRL]:
                 self.position.y += movementspeed
+            if self.keys[key.LCTRL]:
+                self.position.y -= movementspeed
 
         matrix = Matrix4()
-        matrix.rotate_axis(self.pitch, Vector3(1, 0, 0))
-        matrix.rotate_axis(self.yaw, Vector3(0, 1, 0))
-        matrix.translate(self.position.x, self.position.y, self.position.z)
+        matrix.rotate_axis(-self.pitch, Vector3(1, 0, 0))
+        matrix.rotate_axis(-self.yaw, Vector3(0, 1, 0))
+        matrix.translate(-self.position.x, -self.position.y, -self.position.z)
 
         self.view_matrix = matrix
 
@@ -116,7 +116,7 @@ class Camera(object):
                 self.paused = False
             else:
                 if self.keys[key.LSHIFT]:
-                    self.time_multiplier += 1.0
+                    self.time_multiplier += 10.0
                 else:
                     self.time_multiplier += 0.1
         # Key code 45: Minus key

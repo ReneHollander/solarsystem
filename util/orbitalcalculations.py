@@ -6,8 +6,6 @@ Created on 02.12.2015
 
 from math import cos, sin, pi, atan2, sqrt, fabs
 
-MAX_ITERATIONS = 1000000
-
 tau = 2 * pi
 gravitational_constant = 6.67408 * 10 ** -11
 
@@ -16,7 +14,7 @@ class ConvergenceError(Exception):
     pass
 
 
-def eccentric_anomaly_from_mean(eccentricity, mean_anomaly, precision=50, max_iterations=50):
+def eccentric_anomaly_from_mean(eccentricity, mean_anomaly, precision=50, max_iterations=100):
     """
     Convert mean anomaly to eccentric anomaly.
     Source: https://github.com/skyfielders/python-skyfield/blob/master/skyfield/keplerianlib.py

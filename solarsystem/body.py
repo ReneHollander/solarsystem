@@ -121,17 +121,6 @@ class StationaryBody(Body, metaclass=ABCMeta):
         super().__init__(parent, name, texturename, color, radius, axial_tilt, sidereal_rotation_period, mass)
         self.xyz = xyz
 
-    def draw(self, matrix):
-        """
-        Draw the body
-
-        :param matrix: Current Model-View-Projection matrix
-        :type matrix: :class:`euclid.Matrix4`
-        """
-
-        matrix.translate(self.xyz.x, self.xyz.z, self.xyz.y)
-        super().draw(matrix)
-
 
 class OrbitingBody(Body, metaclass=ABCMeta):
     """

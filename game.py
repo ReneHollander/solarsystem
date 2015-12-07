@@ -68,7 +68,7 @@ def toggle_fullscreen(override):
 
 
 # Create a new camera
-camera = Camera(window, position=Vector3(0, -420, 0), pitch=halfpi, callbacks={'toggle_draw_orbits': toggle_draw_orbits,
+camera = Camera(window, position=Vector3(0, 420, 0), pitch=-halfpi, callbacks={'toggle_draw_orbits': toggle_draw_orbits,
                                                                                'toggle_draw_textures': toggle_draw_textures,
                                                                                'toggle_fullscreen': toggle_fullscreen})
 # Create model and projection matrices
@@ -117,6 +117,17 @@ def on_draw():
     Redraw the screen
     """
 
+    # window.clear()
+
+    # glLoadMatrixd(toGlMatrix(mvp))
+    # glColor3f(1.0, 0, 0)
+    # glBegin(GL_POLYGON)
+    # glVertex3f(-10, 0, -10)
+    # glVertex3f(10, 0, -10)
+    # glVertex3f(10, 0, 10)
+    # glVertex3f(-10, 0, 10)
+    # glEnd()
+
     # reset window and set all needed opengl flags
     window.clear()
     glEnable(GL_DEPTH_TEST)
@@ -129,7 +140,7 @@ def on_draw():
     # draw skybox if requested
     if draw_skybox:
         skybox_matrix = mvp.__copy__()
-        skybox_matrix.translate(-camera.position.x, -camera.position.y, -camera.position.z)
+        skybox_matrix.translate(camera.position.x, camera.position.y, camera.position.z)
         skybox_matrix.rotate_axis(math.radians(-90), Vector3(1, 0, 0))
         glLoadMatrixd(toGlMatrix(skybox_matrix))
         skybox.draw()
@@ -188,7 +199,7 @@ def update(dt):
     # update the camera
     camera.update(dt)
     # recalculate mvp matrix
-    mvp = proj_matrix * camera.view_matrix * model_matrix
+    mvp = proj_matrix * camera.view_matrix
 
     # update every bodies
     for planet in planets:

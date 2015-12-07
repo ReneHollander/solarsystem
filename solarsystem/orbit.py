@@ -103,10 +103,10 @@ class CircularOrbit(Orbit):
     def calculate(self, time):
         angle = radians(360 * ((time % self.orbital_period) / self.orbital_period))
         x = self.radius * cos(angle)
-        y = self.radius * sin(angle)
-        pos = Vector3(x, y, 0)
+        z = self.radius * sin(angle)
+        pos = Vector3(x, 0, z)
         if self.inclination != 0:
-            pos = pos.rotate_around(Vector3(0, 1, 0), self.inclination)
+            pos = pos.rotate_around(Vector3(0, 0, 1), self.inclination)
         return pos
 
 
@@ -183,8 +183,8 @@ class EllipticOrbit(Orbit):
         true_anomaly = abs(true_anomaly)
         radius = self.semi_major_axis * (1.0 - self.eccentricity ** 2.0) / (1.0 + self.eccentricity * cos(true_anomaly))
         x = radius * (cos(self.longtitude_ascending_node) * cos(true_anomaly + self.argument_of_periapsis) - sin(self.longtitude_ascending_node) * sin(true_anomaly + self.argument_of_periapsis) * cos(self.inclination))
-        y = radius * (sin(self.longtitude_ascending_node) * cos(true_anomaly + self.argument_of_periapsis) + cos(self.longtitude_ascending_node) * sin(true_anomaly + self.argument_of_periapsis) * cos(self.inclination))
-        z = radius * sin(true_anomaly + self.argument_of_periapsis) * sin(self.inclination)
+        z = radius * (sin(self.longtitude_ascending_node) * cos(true_anomaly + self.argument_of_periapsis) + cos(self.longtitude_ascending_node) * sin(true_anomaly + self.argument_of_periapsis) * cos(self.inclination))
+        y = radius * sin(true_anomaly + self.argument_of_periapsis) * sin(self.inclination)
         pos = Vector3(x, y, z)
         pos *= self.multiplier
         return pos

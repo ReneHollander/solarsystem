@@ -40,6 +40,7 @@ class BodyRenderer(Renderer):
     """
 
     def draw(self, body, matrix):
+        matrix.translate(body.xyz.x, body.xyz.y, body.xyz.z)
         matrix.rotate_axis(math.radians(-90), Vector3(1, 0, 0))
         matrix.rotate_axis(math.radians(body.axial_tilt), Vector3(0, 1, 0))
         matrix.rotate_axis(math.radians(-360 * body.timefactor), Vector3(0, 0, 1))
@@ -63,8 +64,7 @@ class OrbitingBodyRenderer(BodyRenderer):
         if body.draw_orbit:
             linematrix = matrix.__copy__()
             if body.parent is not None:
-                linematrix.translate(body.parent.xyz.x, body.parent.xyz.z, body.parent.xyz.y)
-            linematrix.rotate_axis(math.radians(-90), Vector3(1, 0, 0))
+                linematrix.translate(body.parent.xyz.x, body.parent.xyz.y, body.parent.xyz.z)
 
             glLoadMatrixd(toGlMatrix(linematrix))
             glLineWidth(1.25)
@@ -73,7 +73,6 @@ class OrbitingBodyRenderer(BodyRenderer):
 
         glColor3f(1.0, 1.0, 1.0)
 
-        matrix.translate(body.xyz.x, body.xyz.z, body.xyz.y)
         super().draw(body, matrix)
 
 
@@ -86,7 +85,7 @@ class OrbitingBodyWithRingRenderer(OrbitingBodyRenderer):
     def draw(self, body, mat):
         if body.draw_texture:
             matrix = mat.__copy__()
-            matrix.translate(body.xyz.x, body.xyz.z, body.xyz.y)
+            matrix.translate(body.xyz.x, body.xyz.y, body.xyz.z)
             matrix.rotate_axis(math.radians(-90), Vector3(1, 0, 0))
             matrix.rotate_axis(math.radians(body.axial_tilt), Vector3(0, 1, 0))
             glLoadMatrixd(toGlMatrix(matrix))
