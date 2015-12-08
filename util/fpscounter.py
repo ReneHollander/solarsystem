@@ -17,15 +17,15 @@ class FPSCounter(object):
     """
     update_period = 0.25
 
-    def __init__(self, window, label=None):
+    def __init__(self, window, update_fn=None):
         """
         Initializes the FPSCounter instances
 
         :param window: window instance
-        :param label: label instance which displays the FPS
+        :param update_fn: Function that gets called when the fps is updated
         """
         self.window = window
-        self.label = label
+        self.update_fn = update_fn
         self._window_flip = window.flip
         window.flip = self._hook_flip
 
@@ -56,8 +56,8 @@ class FPSCounter(object):
         :param fps: new FPS
         """
         self.fps = fps
-        if self.label:
-            self.label.text = str(floor(self.fps)) + "fps"
+        if self.update_fn:
+            self.update_fn(floor(self.fps))
 
     def _hook_flip(self):
         self.update()

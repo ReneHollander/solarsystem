@@ -7,200 +7,137 @@ Created on 03.11.2015
 from math import sin, cos
 
 from euclid import *
-from pyglet.window import key, mouse, pyglet
 from util import auto_str, halfpi
 
 
 @auto_str
 class Camera(object):
     """
-    Handles the camera
+    A simple camera using pitch and yaw
+
+    :var position: Initial position
+    :type position: :class:`euclid.Vector3`
+    :var yaw: Initial yaw
+    :type yaw: float
+    :var pitch: Initial pitch
+    :type pitch: float
     """
 
-    def __init__(self, window, position=Vector3(), yaw=0.0, pitch=0.0, callbacks=None):
+    def __init__(self, position=Vector3(), yaw=0.0, pitch=0.0):
         """
         Initializes the camera
 
-        :param window: window instance
-        :param position: position as Vector3
-        :param yaw: yaw
-        :param pitch: pitch
-        :param callbacks: methods to turn orbits and textures on and off
+        :param position: Initial position
+        :type position: :class:`euclid.Vector3`
+        :param yaw: Initial yaw
+        :type yaw: float
+        :param pitch: Initial pitch
+        :type pitch: float
         """
-        if not callbacks:
-            callbacks = {}
-        self.callbacks = callbacks
-        self.window = window
-        self.keys = key.KeyStateHandler()
-        self.mouse_locked = False
-        self.dx = 0
-        self.dy = 0
-        self.yaw = yaw
-        self.pitch = pitch
+
         self.position = position
-        self.view_matrix = Matrix4()
-        self.time_multiplier = 1.0
-        self.time_multiplier_before_pause = 1.0
-        self.paused = False
-        self.draw_help_label = True
-        self.toggled_help_label = False
+        self._yaw = yaw
+        self._pitch = pitch
 
-        window.push_handlers(self.on_mouse_press, self.on_mouse_motion, self.on_key_press, self.on_key_release)
-
-    def update(self, delta):
+    def forwards(self, distance):
         """
-        updates the camera position
+        Moves the camera forwards by the given distance
 
-        :param delta: delta camera position
+        :param distance: Distance to move
+        :type distance: float
         """
-        movementspeed = 30 * delta
-        mousesensitivity = 0.005
 
-        dx = self.get_dx()
-        dy = self.get_dy()
+        self.position.x -= distance * sin(self._yaw)
+        self.position.z -= distance * cos(self._yaw)
 
-        self.yaw -= dx * mousesensitivity
-        self.pitch += dy * mousesensitivity
+    def backwards(self, distance):
+        """
+        Moves the camera backwards by the given distance
 
-        if self.pitch > halfpi:
-            self.pitch = halfpi
-        if self.pitch < -halfpi:
-            self.pitch = -halfpi
+        :param distance: Distance to move
+        :type distance: float
+        """
 
-        if self.mouse_locked:
-            if self.keys[key.LSHIFT]:
-                # ...
-                movementspeed *= 10
-            if self.keys[key.W]:
-                self.position.x -= movementspeed * sin(self.yaw)
-                self.position.z -= movementspeed * cos(self.yaw)
-            if self.keys[key.S]:
-                self.position.x += movementspeed * sin(self.yaw)
-                self.position.z += movementspeed * cos(self.yaw)
-            if self.keys[key.A]:
-                self.position.x += movementspeed * sin(self.yaw - 90)
-                self.position.z += movementspeed * cos(self.yaw - 90)
-            if self.keys[key.D]:
-                self.position.x += movementspeed * sin(self.yaw + 90)
-                self.position.z += movementspeed * cos(self.yaw + 90)
-            if self.keys[key.SPACE]:
-                self.position.y += movementspeed
-            if self.keys[key.LCTRL]:
-                self.position.y -= movementspeed
+        self.position.x += distance * sin(self._yaw)
+        self.position.z += distance * cos(self._yaw)
+
+    def left(self, distance):
+        """
+        Moves the camera left by the given distance
+
+        :param distance: Distance to move
+        :type distance: float
+        """
+
+        self.position.x += distance * sin(self._yaw - 90)
+        self.position.z += distance * cos(self._yaw - 90)
+
+    def right(self, distance):
+        """
+        Moves the camera right by the given distance
+
+        :param distance: Distance to move
+        :type distance: float
+        """
+
+        self.position.x += distance * sin(self._yaw + 90)
+        self.position.z += distance * cos(self._yaw + 90)
+
+    def up(self, distance):
+        """
+        Moves the camera up by the given distance
+
+        :param distance: Distance to move
+        :type distance: float
+        """
+
+        self.position.y += distance
+
+    def down(self, distance):
+        """
+        Moves the camera down by the given distance
+
+        :param distance: Distance to move
+        :type distance: float
+        """
+
+        self.position.y -= distance
+
+    def pitch(self, angle):
+        """
+        Adds the given pitch to the camera
+
+        :param angle: Angle to move
+        :type distance: float
+        """
+
+        self._pitch += angle
+
+        if self._pitch > halfpi:
+            self._pitch = halfpi
+        if self._pitch < -halfpi:
+            self._pitch = -halfpi
+
+    def yaw(self, angle):
+        """
+        Adds the given yaw to the camera
+
+        :param angle: Angle to move
+        :type distance: float
+        """
+
+        self._yaw += angle
+
+    def view_matrix(self):
+        """
+        Calculates the view matrix
+
+        :return: Calculated view matrix
+        :rtype: :class:`euclid.Matrix4`
+        """
 
         matrix = Matrix4()
-        matrix.rotate_axis(-self.pitch, Vector3(1, 0, 0))
-        matrix.rotate_axis(-self.yaw, Vector3(0, 1, 0))
+        matrix.rotate_axis(-self._pitch, Vector3(1, 0, 0))
+        matrix.rotate_axis(-self._yaw, Vector3(0, 1, 0))
         matrix.translate(-self.position.x, -self.position.y, -self.position.z)
-
-        self.view_matrix = matrix
-
-    def on_key_press(self, symbol, modifiers):
-        """
-        Keypress handler
-
-        :param symbol: pressed symbol
-        """
-        self.keys[symbol] = True
-        if symbol == key.ESCAPE:
-            self.window.set_exclusive_mouse(False)
-            self.mouse_locked = False
-            cb = self.callbacks['toggle_fullscreen']
-            if cb is not None:
-                cb(False)
-            return pyglet.event.EVENT_HANDLED
-        # Key code 43: Plus key
-        if symbol == key.NUM_ADD or symbol == 43:
-            if self.paused:
-                self.time_multiplier = self.time_multiplier_before_pause
-                self.paused = False
-            else:
-                if self.keys[key.LSHIFT]:
-                    self.time_multiplier += 10.0
-                else:
-                    self.time_multiplier += 0.1
-        # Key code 45: Minus key
-        if symbol == key.NUM_SUBTRACT or symbol == 45:
-            if self.paused:
-                self.time_multiplier = self.time_multiplier_before_pause
-                self.paused = False
-            else:
-                if self.keys[key.LSHIFT]:
-                    self.time_multiplier -= 1.0
-                else:
-                    self.time_multiplier -= 0.1
-        if symbol == key.P:
-            if self.paused:
-                self.time_multiplier = self.time_multiplier_before_pause
-            else:
-                self.time_multiplier_before_pause = self.time_multiplier
-                self.time_multiplier = 0
-            self.paused = not self.paused
-        if symbol == key.O:
-            cb = self.callbacks['toggle_draw_orbits']
-            if cb is not None:
-                cb()
-        if symbol == key.T:
-            cb = self.callbacks['toggle_draw_textures']
-            if cb is not None:
-                cb()
-        if symbol == key.H:
-            self.toggled_help_label = True
-            self.draw_help_label = not self.draw_help_label
-        if symbol == key.F11:
-            cb = self.callbacks['toggle_fullscreen']
-            if cb is not None:
-                cb(None)
-
-    def on_key_release(self, symbol, modifiers):
-        """
-        called on released key
-
-        :param symbol: released key
-        """
-        self.keys[symbol] = False
-
-    def on_mouse_press(self, x, y, button, modifiers):
-        """
-        called on mouse press
-
-        :param x: x location of cursor
-        :param y: y location of cursor
-        :param button: pressed mouse button
-        """
-        if button == mouse.LEFT:
-            self.window.set_exclusive_mouse(True)
-            self.mouse_locked = True
-
-    def get_dx(self):
-        """
-        gets delta x and resets it to 0
-
-        :return: delta x
-        """
-        tmp = self.dx
-        self.dx = 0
-        return tmp
-
-    def get_dy(self):
-        """
-        gets delta y and resets it to 0
-
-        :return: delta y
-        """
-        tmp = self.dy
-        self.dy = 0
-        return tmp
-
-    def on_mouse_motion(self, x, y, dx, dy):
-        """
-        called on mouse movement
-
-        :param x: x location
-        :param y: y location
-        :param dx: delta x
-        :param dy: delta y
-        """
-        if self.mouse_locked:
-            self.dx += dx
-            self.dy += dy
+        return matrix

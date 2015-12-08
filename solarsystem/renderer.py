@@ -42,7 +42,7 @@ class BodyRenderer(Renderer):
     def draw(self, body, matrix):
         matrix.translate(body.xyz.x, body.xyz.y, body.xyz.z)
         matrix.rotate_axis(math.radians(-90), Vector3(1, 0, 0))
-        matrix.rotate_axis(math.radians(body.axial_tilt), Vector3(0, 1, 0))
+        matrix.rotate_axis(body.axial_tilt, Vector3(0, 1, 0))
         matrix.rotate_axis(math.radians(-360 * body.timefactor), Vector3(0, 0, 1))
         glLoadMatrixd(toGlMatrix(matrix))
         if body.draw_texture:
@@ -87,7 +87,7 @@ class OrbitingBodyWithRingRenderer(OrbitingBodyRenderer):
             matrix = mat.__copy__()
             matrix.translate(body.xyz.x, body.xyz.y, body.xyz.z)
             matrix.rotate_axis(math.radians(-90), Vector3(1, 0, 0))
-            matrix.rotate_axis(math.radians(body.axial_tilt), Vector3(0, 1, 0))
+            matrix.rotate_axis(body.axial_tilt, Vector3(0, 1, 0))
             glLoadMatrixd(toGlMatrix(matrix))
             glDisable(GL_DEPTH_TEST)
             glDisable(GL_CULL_FACE)

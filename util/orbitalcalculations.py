@@ -4,10 +4,13 @@ Created on 02.12.2015
 :author: Rene Hollander
 """
 
+import datetime
 from math import cos, sin, pi, atan2, sqrt, fabs
 
 tau = 2 * pi
 gravitational_constant = 6.67408 * 10 ** -11
+
+J2000 = datetime.datetime(year=2000, month=1, day=1, hour=12, minute=0, second=0)
 
 
 class ConvergenceError(Exception):

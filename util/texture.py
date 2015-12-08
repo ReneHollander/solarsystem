@@ -3,7 +3,7 @@ Created on 20.11.2015
 
 :author: Rene Hollander
 """
-
+import pyglet
 from pyglet.gl import *
 from util import auto_str
 

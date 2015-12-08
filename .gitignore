@@ -4,3 +4,4 @@ venv/
 *.pyc
 doc/build
 doc/source/_build
+__pycache__/

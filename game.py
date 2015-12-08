@@ -4,16 +4,14 @@ Created on 04.11.2015
 :author: Rene Hollander, Paul Kalauner
 """
 
-from math import floor
-
 import pyglet
+from controls import Controls
 from euclid import *
+from gui import GUI
 from pyglet.gl import *
-from pyglet.text import Label
 from solarsystem.loader import load_bodies
-from util import load_string, toGlMatrix
+from util import toGlMatrix
 from util.camera import Camera, halfpi
-from util.fpscounter import FPSCounter
 from util.skybox import SkySphere
 
 # Register resource locations in pyglet resource loader
@@ -23,13 +21,6 @@ pyglet.resource.reindex()
 # Configure and setup window
 config = pyglet.gl.Config(sample_buffers=1, samples=8, depth_size=24)
 window = pyglet.window.Window(800, 600, config=config, caption='Solarsystem', resizable=True, vsync=False)
-
-# Setup HUD elements
-label_fpscounter = Label('', x=5, y=window.height - 5 - 12, font_size=12, bold=True, color=(127, 127, 127, 127))
-fps_counter = FPSCounter(window, label_fpscounter)
-label_timestep = Label('', x=10, y=10, font_size=18, bold=True, color=(127, 127, 127, 127))
-help_label = Label(load_string('help.txt'), font_size=16, x=5, y=window.height - 5 - 12 - 2 - 16, color=(170, 170, 170, 255), width=400, multiline=True)
-hudelements = [label_fpscounter, label_timestep]
 
 fullscreen = False
 draw_skybox = True
@@ -68,9 +59,14 @@ def toggle_fullscreen(override):
 
 
 # Create a new camera
-camera = Camera(window, position=Vector3(0, 420, 0), pitch=-halfpi, callbacks={'toggle_draw_orbits': toggle_draw_orbits,
-                                                                               'toggle_draw_textures': toggle_draw_textures,
-                                                                               'toggle_fullscreen': toggle_fullscreen})
+camera = Camera(position=Vector3(0, 420, 0), pitch=-halfpi)
+
+controls = Controls(window, camera, callbacks={'toggle_draw_orbits': toggle_draw_orbits,
+                                               'toggle_draw_textures': toggle_draw_textures,
+                                               'toggle_fullscreen': toggle_fullscreen})
+
+gui = GUI(window, controls, planets)
+
 # Create model and projection matrices
 model_matrix = Matrix4()
 proj_matrix = None
@@ -104,12 +100,6 @@ def on_resize(width, height):
     glViewport(0, 0, width, height)
     glMatrixMode(GL_MODELVIEW)
 
-    # update label positions
-    label_fpscounter.y = window.height - 5 - 12
-    help_label.y = window.height - 5 - 12 - 2 - 16
-
-    return True
-
 
 @window.event
 def on_draw():
@@ -117,19 +107,9 @@ def on_draw():
     Redraw the screen
     """
 
-    # window.clear()
-
-    # glLoadMatrixd(toGlMatrix(mvp))
-    # glColor3f(1.0, 0, 0)
-    # glBegin(GL_POLYGON)
-    # glVertex3f(-10, 0, -10)
-    # glVertex3f(10, 0, -10)
-    # glVertex3f(10, 0, 10)
-    # glVertex3f(-10, 0, 10)
-    # glEnd()
-
     # reset window and set all needed opengl flags
     window.clear()
+    glPushAttrib(GL_ENABLE_BIT)
     glEnable(GL_DEPTH_TEST)
     glEnable(GL_BLEND)
     glEnable(GL_CULL_FACE)
@@ -139,42 +119,33 @@ def on_draw():
 
     # draw skybox if requested
     if draw_skybox:
+        glPushAttrib(GL_ENABLE_BIT)
         skybox_matrix = mvp.__copy__()
         skybox_matrix.translate(camera.position.x, camera.position.y, camera.position.z)
         skybox_matrix.rotate_axis(math.radians(-90), Vector3(1, 0, 0))
         glLoadMatrixd(toGlMatrix(skybox_matrix))
         skybox.draw()
-
-    # reemable opengl flags
-    glEnable(GL_DEPTH_TEST)
-    glEnable(GL_BLEND)
-    glEnable(GL_CULL_FACE)
+        glPopAttrib(GL_ENABLE_BIT)
 
     # loop through bodies and draw
     for planet in planets:
+        glPushAttrib(GL_ENABLE_BIT)
         planet.draw(mvp.__copy__())
+        glPopAttrib(GL_ENABLE_BIT)
 
-    # ====== START HUD ======
+    glPopAttrib(GL_ENABLE_BIT)
+
+    # ====== START GUI ======
     # create an orthographic projection (2d)
-    glMatrixMode(GL_MODELVIEW)
-    glPushMatrix()
-    glLoadIdentity()
+    glPushAttrib(GL_ENABLE_BIT)
     glMatrixMode(GL_PROJECTION)
-    glPushMatrix()
+    glLoadIdentity()
+    glMatrixMode(GL_MODELVIEW)
     glLoadIdentity()
     glOrtho(0, window.width, 0, window.height, -1, 1)
-
-    # draw all hudelements
-    for hudelement in hudelements:
-        hudelement.draw()
-
-    if camera.draw_help_label:
-        help_label.draw()
-
-    glPopMatrix()
-    glMatrixMode(GL_MODELVIEW)
-    glPopMatrix()
-    # ====== STOP HUD ======
+    gui.draw()
+    glPopAttrib(GL_ENABLE_BIT)
+    # ====== STOP GUI ======
 
 
 def update(dt):
@@ -188,18 +159,18 @@ def update(dt):
     global time
 
     # recalculate solarsystem time
-    timestep = 60 * 60 * 24 * 7 * camera.time_multiplier
+    timestep = 60 * 60 * 24 * 7 * controls.time_multiplier
     solarsystem_time += dt * timestep
     time += dt
-    label_timestep.text = "1 second = " + str(floor(timestep / 60 / 60)) + "hours"
+    gui.update_time(timestep, solarsystem_time)
 
-    if not camera.toggled_help_label and time >= 10:
-        camera.draw_help_label = False
+    if not controls.toggled_help_label and time >= 10:
+        controls.draw_help_label = False
 
-    # update the camera
-    camera.update(dt)
+    # update the controls
+    controls.update(dt)
     # recalculate mvp matrix
-    mvp = proj_matrix * camera.view_matrix
+    mvp = proj_matrix * camera.view_matrix()
 
     # update every bodies
     for planet in planets:
