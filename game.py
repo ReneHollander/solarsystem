@@ -26,46 +26,10 @@ fullscreen = False
 draw_skybox = True
 
 # looad the bodies from the json files
-planets = load_bodies("bodies")
-
-
-def toggle_draw_orbits():
-    """
-    Toggles the plotting of the orbits
-    """
-
-    for cur in planets:
-        cur.draw_orbit = not cur.draw_orbit
-
-
-def toggle_draw_textures():
-    """
-    Toggles the drawing of the textures
-    """
-
-    global draw_skybox
-    draw_skybox = not draw_skybox
-    for cur in planets:
-        cur.draw_texture = not cur.draw_texture
-
-
-def toggle_fullscreen(override):
-    global fullscreen
-    if override is not None:
-        fullscreen = override
-    else:
-        fullscreen = not fullscreen
-    window.set_fullscreen(fullscreen)
-
+bodies = load_bodies("bodies")
 
 # Create a new camera
 camera = Camera(position=Vector3(0, 420, 0), pitch=-halfpi)
-
-controls = Controls(window, camera, callbacks={'toggle_draw_orbits': toggle_draw_orbits,
-                                               'toggle_draw_textures': toggle_draw_textures,
-                                               'toggle_fullscreen': toggle_fullscreen})
-
-gui = GUI(window, controls, planets)
 
 # Create model and projection matrices
 model_matrix = Matrix4()
@@ -81,7 +45,40 @@ time = solarsystem_time
 skybox = SkySphere("milkyway.jpg", 5500)
 
 
-# list of all bodies to be drawn
+def toggle_draw_orbits():
+    """
+    Toggles the plotting of the orbits
+    """
+
+    for cur in bodies:
+        cur.draw_orbit = not cur.draw_orbit
+
+
+def toggle_draw_textures():
+    """
+    Toggles the drawing of the textures
+    """
+
+    global draw_skybox
+    draw_skybox = not draw_skybox
+    for cur in bodies:
+        cur.draw_texture = not cur.draw_texture
+
+
+def toggle_fullscreen(override):
+    global fullscreen
+    if override is not None:
+        fullscreen = override
+    else:
+        fullscreen = not fullscreen
+    window.set_fullscreen(fullscreen)
+
+
+controls = Controls(window, camera, bodies, callbacks={'toggle_draw_orbits': toggle_draw_orbits,
+                                                       'toggle_draw_textures': toggle_draw_textures,
+                                                       'toggle_fullscreen': toggle_fullscreen})
+
+gui = GUI(window, controls, bodies)
 
 
 @window.event
@@ -128,7 +125,7 @@ def on_draw():
         glPopAttrib(GL_ENABLE_BIT)
 
     # loop through bodies and draw
-    for planet in planets:
+    for planet in bodies:
         glPushAttrib(GL_ENABLE_BIT)
         planet.draw(mvp.__copy__())
         glPopAttrib(GL_ENABLE_BIT)
@@ -143,7 +140,20 @@ def on_draw():
     glMatrixMode(GL_MODELVIEW)
     glLoadIdentity()
     glOrtho(0, window.width, 0, window.height, -1, 1)
+
     gui.draw()
+
+    glColor3f(1, 1, 0)
+    glLineWidth(1.0)
+    glBegin(GL_LINES)
+    cross_len = 10
+    glVertex2f(window.width / 2 - cross_len, window.height / 2)
+    glVertex2f(window.width / 2 + cross_len, window.height / 2)
+    glVertex2f(window.width / 2, window.height / 2 - cross_len)
+    glVertex2f(window.width / 2, window.height / 2 + cross_len)
+    glEnd()
+    glColor3f(1, 1, 1)
+
     glPopAttrib(GL_ENABLE_BIT)
     # ====== STOP GUI ======
 
@@ -173,7 +183,7 @@ def update(dt):
     mvp = proj_matrix * camera.view_matrix()
 
     # update every bodies
-    for planet in planets:
+    for planet in bodies:
         planet.update(solarsystem_time)
 
 

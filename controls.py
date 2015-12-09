@@ -1,12 +1,14 @@
+from euclid import Vector3
 from pyglet import window
 from pyglet.event import EVENT_HANDLED
 from pyglet.window import key
 
 
 class Controls:
-    def __init__(self, window, camera, callbacks=None, mouse_sensitivity=0.005):
+    def __init__(self, window, camera, bodies, callbacks=None, mouse_sensitivity=0.0025):
         self.window = window
         self.camera = camera
+        self.bodies = bodies
         self.callbacks = callbacks
         if not self.callbacks:
             self.callbacks = {}
@@ -22,6 +24,8 @@ class Controls:
         self.paused = False
         self.draw_help_label = True
         self.toggled_help_label = False
+        self.selected_body = None
+        self.camera_offset = Vector3()
 
         window.push_handlers(self.on_mouse_press, self.on_mouse_motion, self.on_key_press, self.on_key_release)
 
@@ -31,7 +35,7 @@ class Controls:
 
         :param delta: delta camera position
         """
-        movementspeed = 30 * delta#
+        movementspeed = 30 * delta  #
 
         dx = self.get_dx()
         dy = self.get_dy()
@@ -55,6 +59,9 @@ class Controls:
             if self.keys[key.LCTRL]:
                 self.camera.down(movementspeed)
 
+        if self.selected_body:
+            self.camera.position += self.selected_body.xyz - self.camera.position - self.camera_offset
+
     def on_key_press(self, symbol, modifiers):
         """
         Keypress handler
@@ -63,12 +70,16 @@ class Controls:
         """
         self.keys[symbol] = True
         if symbol == key.ESCAPE:
-            self.window.set_exclusive_mouse(False)
-            self.mouse_locked = False
-            cb = self.callbacks['toggle_fullscreen']
-            if cb is not None:
-                cb(False)
-            return EVENT_HANDLED
+            if self.selected_body:
+                self.selected_body = None
+                return EVENT_HANDLED
+            else:
+                self.window.set_exclusive_mouse(False)
+                self.mouse_locked = False
+                cb = self.callbacks['toggle_fullscreen']
+                if cb is not None:
+                    cb(False)
+                return EVENT_HANDLED
         # Key code 43: Plus key
         if symbol == key.NUM_ADD or symbol == 43:
             if self.paused:
@@ -76,7 +87,7 @@ class Controls:
                 self.paused = False
             else:
                 if self.keys[key.LSHIFT]:
-                    self.time_multiplier += 10.0
+                    self.time_multiplier += 5.0
                 else:
                     self.time_multiplier += 0.1
             return EVENT_HANDLED
@@ -87,7 +98,7 @@ class Controls:
                 self.paused = False
             else:
                 if self.keys[key.LSHIFT]:
-                    self.time_multiplier -= 1.0
+                    self.time_multiplier -= 5.0
                 else:
                     self.time_multiplier -= 0.1
             return EVENT_HANDLED
@@ -136,9 +147,20 @@ class Controls:
         :param button: pressed mouse button
         """
         if button == window.mouse.LEFT:
-            self.window.set_exclusive_mouse(True)
-            self.mouse_locked = True
-            return EVENT_HANDLED
+            if not self.mouse_locked:
+                self.window.set_exclusive_mouse(True)
+                self.mouse_locked = True
+                return EVENT_HANDLED
+            else:
+                ray = self.camera.create_ray()
+                for body in self.bodies:
+                    if body.intersects(ray):
+                        print(body.name + " hit!")
+                        self.selected_body = body
+                        self.camera_offset = self.selected_body.xyz - self.camera.position
+                        break
+                else:
+                    self.selected_body = None
 
     def get_dx(self):
         """

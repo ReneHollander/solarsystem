@@ -5,7 +5,7 @@ from pyglet_gui.override import Label
 
 
 class BetterLabel(Viewer):
-    def __init__(self, text="", bold=False, italic=False, font_name=None, font_size=None, color=None, multiline=False, lblwidth=None, path=None):
+    def __init__(self, text="", bold=False, italic=False, font_name=None, font_size=None, color=None, multiline=False, lblwidth=None, lblalign='left', path=None):
         super().__init__(self)
         self.text = text
         self.bold = bold
@@ -15,6 +15,7 @@ class BetterLabel(Viewer):
         self.color = color
         self.multiline = multiline
         self.lblwidth = lblwidth
+        self.lblalign = lblalign
         self.path = path
         self.label = None
 
@@ -48,7 +49,8 @@ class BetterLabel(Viewer):
                                        font_name=self.font_name or theme['font'],
                                        font_size=self.font_size or theme['font_size'],
                                        multiline=self.multiline,
-                                       width=self.lblwidth or theme['width'],
+                                       width=self.lblwidth or theme['lblwidth'],
+                                       align=self.lblalign,
                                        **self.get_batch('background'))
 
 

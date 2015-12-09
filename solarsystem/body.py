@@ -3,6 +3,7 @@ Created on 03.11.2015
 
 :author: Rene Hollander
 """
+from math import sqrt
 
 from abc import ABCMeta
 from euclid import Vector3
@@ -89,6 +90,21 @@ class Body(object, metaclass=ABCMeta):
         """
 
         self.renderer.draw(self, matrix)
+
+    def intersects(self, ray):
+        q = ray.direction.dot(ray.origin - self.xyz) ** 2 - (ray.origin - self.xyz).dot(ray.origin - self.xyz) + self.radius ** 2
+        if q < 0:
+            return False
+        else:
+            d = -ray.direction.dot(ray.origin - self.xyz)
+            d1 = d - sqrt(q)
+            d2 = d + sqrt(q)
+            if 0 < d1 and (d1 < d2 or d2 < 0):
+                return True
+            elif 0 < d2 and (d2 < d1 or d1 < 0):
+                return True
+            else:
+                return False
 
 
 class StationaryBody(Body, metaclass=ABCMeta):

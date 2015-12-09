@@ -8,6 +8,7 @@ from math import sin, cos
 
 from euclid import *
 from util import auto_str, halfpi
+from util.ray import Ray
 
 
 @auto_str
@@ -141,3 +142,7 @@ class Camera(object):
         matrix.rotate_axis(-self._yaw, Vector3(0, 1, 0))
         matrix.translate(-self.position.x, -self.position.y, -self.position.z)
         return matrix
+
+    def create_ray(self):
+        mat = self.view_matrix()
+        return Ray(self.position, -Vector3(mat[2], mat[6], mat[10]).normalize())
