@@ -12,10 +12,10 @@ util.camera module
     :undoc-members:
     :show-inheritance:
 
-util.mathhelper module
-----------------------
+util.orbitalcalculations module
+-------------------------------
 
-.. automodule:: util.mathhelper
+.. automodule:: util.orbitalcalculations
     :members:
     :undoc-members:
     :show-inheritance:
