@@ -92,6 +92,15 @@ class Body(object, metaclass=ABCMeta):
         self.renderer.draw(self, matrix)
 
     def intersects(self, ray):
+        """
+        Checks if this body intersecets with the ray
+
+        :param ray: Ray to check
+        :type ray: :class:`util.ray.Ray`
+        :return: True if the ray intersects this object, otherwise False:
+        :rtype: bool
+        """
+
         q = ray.direction.dot(ray.origin - self.xyz) ** 2 - (ray.origin - self.xyz).dot(ray.origin - self.xyz) + self.radius ** 2
         if q < 0:
             return False

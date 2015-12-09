@@ -4,6 +4,8 @@ from pyglet_gui.gui import pyglet
 from pyglet_gui.override import Label
 
 
+# Some classes copied from pyglet-gui to add some more functionality
+
 class BetterLabel(Viewer):
     def __init__(self, text="", bold=False, italic=False, font_name=None, font_size=None, color=None, multiline=False, lblwidth=None, lblalign='left', path=None):
         super().__init__(self)

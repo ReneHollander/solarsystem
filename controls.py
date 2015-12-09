@@ -1,3 +1,9 @@
+"""
+Created on 08.12.2015
+
+:author: Rene Hollander
+"""
+
 from euclid import Vector3
 from pyglet import window
 from pyglet.event import EVENT_HANDLED
@@ -5,6 +11,10 @@ from pyglet.window import key
 
 
 class Controls:
+    """
+    Class managing the controls of the application
+    """
+
     def __init__(self, window, camera, bodies, callbacks=None, mouse_sensitivity=0.0025):
         self.window = window
         self.camera = camera
@@ -136,6 +146,7 @@ class Controls:
 
         :param symbol: released key
         """
+
         self.keys[symbol] = False
 
     def on_mouse_press(self, x, y, button, modifiers):
@@ -146,6 +157,7 @@ class Controls:
         :param y: y location of cursor
         :param button: pressed mouse button
         """
+
         if button == window.mouse.LEFT:
             if not self.mouse_locked:
                 self.window.set_exclusive_mouse(True)
@@ -168,6 +180,7 @@ class Controls:
 
         :return: delta x
         """
+
         tmp = self.dx
         self.dx = 0
         return tmp
@@ -178,6 +191,7 @@ class Controls:
 
         :return: delta y
         """
+
         tmp = self.dy
         self.dy = 0
         return tmp
@@ -191,6 +205,7 @@ class Controls:
         :param dx: delta x
         :param dy: delta y
         """
+
         if self.mouse_locked:
             self.dx += dx
             self.dy += dy

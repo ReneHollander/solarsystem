@@ -1,4 +1,11 @@
+"""
+Created on 08.12.2015
+
+:author: Rene Hollander
+"""
+
 import datetime
+
 from math import floor
 
 from pyglet_gui.buttons import pyglet
@@ -16,6 +23,10 @@ empty_theme = Theme({}, resources_path=None)
 
 
 class GUI:
+    """
+    Controls the GUI (HUD) of this application
+    """
+
     def __init__(self, window, controls, bodies):
         self.window = window
         self.controls = controls
@@ -71,6 +82,10 @@ class GUI:
 
 
 class BodyButton:
+    """
+    A button representing a body to teleport to
+    """
+
     def __init__(self, gui, body):
         self.gui = gui
         self.body = body

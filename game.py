@@ -21,7 +21,7 @@ pyglet.resource.reindex()
 
 # Configure and setup window
 config = pyglet.gl.Config(sample_buffers=1, samples=8, depth_size=24)
-window = pyglet.window.Window(800, 600, config=config, caption='Solarsystem', resizable=True, vsync=False)
+window = pyglet.window.Window(1280, 720, config=config, caption='Solarsystem', resizable=True, vsync=False)
 
 fullscreen = False
 draw_skybox = True
