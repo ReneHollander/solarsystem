@@ -26,7 +26,7 @@ class GUI:
         # Setup HUD elements
         self.label_fps = Label("", bold=True, font_name="Arial", font_size=12, color=(127, 127, 127, 127))
         self.label_time = Label("", bold=True, font_name="Arial", font_size=18, color=(127, 127, 127, 127))
-        self.label_help = BetterLabel(load_string('help.txt'), bold=False, font_name="Arial", font_size=18, color=(170, 170, 170, 255), multiline=True, lblwidth=400)
+        self.label_help = BetterLabel(load_string('help.txt'), bold=False, font_name="Arial", font_size=18, color=(170, 170, 170, 255), multiline=True, lblwidth=600)
         self.label_planet_info = BetterLabel("", bold=False, font_name="Arial", font_size=12, color=(170, 170, 170, 255), multiline=True, lblwidth=400, lblalign='right')
         self.managers = [
             Manager(self.label_fps, window=window, theme=empty_theme, is_movable=False, anchor=ANCHOR_TOP_LEFT),

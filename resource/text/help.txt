@@ -7,8 +7,10 @@ Ctrl		Down
 Shift		Fast-Travel
 +		Increase speed
 -		Decrease speed
+F1		Help
 F11		Toggle fullscreen
 P		Pause/Unpause
 O		Toggle orbits
 T		Toggle textures and skybox
-H		Toggle help menu
+ESC		Unlock mouse/Deselect body
+L Mouse	Select a body

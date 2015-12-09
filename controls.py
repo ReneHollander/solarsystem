@@ -120,7 +120,7 @@ class Controls:
             if cb is not None:
                 cb()
             return EVENT_HANDLED
-        if symbol == key.H:
+        if symbol == key.F1:
             self.toggled_help_label = True
             self.draw_help_label = not self.draw_help_label
             return EVENT_HANDLED
