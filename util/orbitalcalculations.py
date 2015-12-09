@@ -17,7 +17,7 @@ class ConvergenceError(Exception):
     pass
 
 
-def eccentric_anomaly_from_mean(eccentricity, mean_anomaly, precision=50, max_iterations=100):
+def eccentric_anomaly_from_mean(eccentricity, mean_anomaly, precision=50, max_iterations=1000):
     """
     Convert mean anomaly to eccentric anomaly.
     Source: https://github.com/skyfielders/python-skyfield/blob/master/skyfield/keplerianlib.py

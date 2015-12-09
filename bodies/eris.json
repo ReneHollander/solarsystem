@@ -10,15 +10,15 @@
   "radius": 3.489,
   "orbit": {
     "type": "elliptic",
-    "apoapsis": 1.460838e+16,
-    "periapsis": 5.658539e+15,
+    "apoapsis": 1.4602e+16,
+    "periapsis": 5.723e+15,
     "longtitude_ascending_node": 0.627499971,
     "argument_of_periapsis": 2.635045745,
     "inclination": 0.768721542,
     "initial_mean_anomaly": 3.563264201,
-    "multiplier": 5.013368e-13
+    "multiplier": 0.0000000000015
   },
   "axial_tilt": 0,
   "sidereal_rotation_period": 1.0791,
-  "mass": 1.66e+25
+  "mass": 1.67e+22
 }

@@ -16,7 +16,7 @@
     "argument_of_periapsis": 5.185213787,
     "inclination": 0.506196209,
     "initial_mean_anomaly": 2.728874645,
-    "multiplier": 5.9281225e-10
+    "multiplier": 0.000000001
   },
   "axial_tilt": 0,
   "sidereal_rotation_period": 0.3237,

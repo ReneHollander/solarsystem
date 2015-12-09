@@ -13,7 +13,7 @@ from solarsystem.renderer import BodyRenderer, OrbitingBodyRenderer
 from util import auto_str
 from util.texture import Texture
 
-plot_steps = 512
+plot_steps = 1024
 
 
 @auto_str

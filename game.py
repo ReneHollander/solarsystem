@@ -92,7 +92,7 @@ def on_resize(width, height):
 
     global proj_matrix
     # recalculate projection matrix
-    proj_matrix = Matrix4.new_perspective(45, float(width) / float(height), 0.1, 16000.0)
+    proj_matrix = Matrix4.new_perspective(45, float(width) / float(height), 0.1, 64000.0)
     # set new viewport
     glViewport(0, 0, width, height)
     glMatrixMode(GL_MODELVIEW)
