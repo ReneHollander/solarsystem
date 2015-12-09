@@ -13,6 +13,7 @@ Contents:
 
    solarsystem
    util
+   root
 
 
 Indices and tables
