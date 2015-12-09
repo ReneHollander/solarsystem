@@ -3,6 +3,7 @@ Created on 04.11.2015
 
 :author: Rene Hollander, Paul Kalauner
 """
+import math
 
 import pyglet
 from controls import Controls
