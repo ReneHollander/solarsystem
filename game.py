@@ -3,6 +3,7 @@ Created on 04.11.2015
 
 :author: Rene Hollander, Paul Kalauner
 """
+import math
 
 import pyglet
 from controls import Controls
@@ -122,15 +123,15 @@ def on_draw():
         skybox_matrix.rotate_axis(math.radians(-90), Vector3(1, 0, 0))
         glLoadMatrixd(toGlMatrix(skybox_matrix))
         skybox.draw()
-        glPopAttrib(GL_ENABLE_BIT)
+        glPopAttrib()
 
     # loop through bodies and draw
     for planet in bodies:
         glPushAttrib(GL_ENABLE_BIT)
         planet.draw(mvp.__copy__())
-        glPopAttrib(GL_ENABLE_BIT)
+        glPopAttrib()
 
-    glPopAttrib(GL_ENABLE_BIT)
+    glPopAttrib()
 
     # ====== START GUI ======
     # create an orthographic projection (2d)
@@ -154,7 +155,7 @@ def on_draw():
     glEnd()
     glColor3f(1, 1, 1)
 
-    glPopAttrib(GL_ENABLE_BIT)
+    glPopAttrib()
     # ====== STOP GUI ======
 
 
